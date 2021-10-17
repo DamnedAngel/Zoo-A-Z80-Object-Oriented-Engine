@@ -1,0 +1,4 @@
+﻿ZooBuilder version 0.1
+A Lightweight Object Orientation framework for Z80
+by DamnedAngel - 2019
+---------------------------------------------------------------------------------------

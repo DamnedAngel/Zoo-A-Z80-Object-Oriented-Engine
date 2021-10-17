@@ -1,0 +1,20 @@
+﻿
+.globl {{zoo_class.name}}
+.globl {{zoo_class.name}}.ParentClass
+.globl {{zoo_class.name}}.SisterClass
+.globl {{zoo_class.name}}.ClassName
+.globl {{zoo_class.name}}.SizeOfObject
+
+.globl {{zoo_class.name}}.Properties
+{{for property in zoo_class.properties}}
+{{if !property.is_private}}
+{{zoo_class.name}}.{{property.name}}:	.equ {{property.offset}}	; Size = {{property.size}}
+{{end}}
+{{end}}
+
+{{zoo_class.name}}.Methods::
+{{for method in zoo_class.methods}}
+{{if !method.is_private}}
+.globl {{zoo_class.name}}.{{method.name}}
+{{end}}
+{{end}}

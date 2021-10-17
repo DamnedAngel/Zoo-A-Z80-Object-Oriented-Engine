@@ -1,0 +1,8 @@
+Generating Z80 OO library for: {0}
+Reflection Level: {1}
+Verbose: {2}
+Wait for key press: {3}
+Output File: {4}
+Output Directory: {5}
+Zoo Directory: {6}
+---------------------------------------------------------------------------------------

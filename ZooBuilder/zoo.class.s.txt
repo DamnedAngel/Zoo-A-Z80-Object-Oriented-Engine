@@ -1,0 +1,30 @@
+﻿	.include "{{zoo.path}}/zoo.asm"
+{{if zoo_class.parent_class}}	.include "{{zoo_class.parent_class.path}}/{{zoo_class.parent_class.name}}_inheritance.asm"
+{{end}}{{
+for dependency in zoo_class.dependencies}}	.include "{{dependency.path}}/{{dependency.name}}.asm"
+{{end}}{{
+for zinclude in zoo_class.zincludes}}	.include "{{zinclude.path}}/{{zinclude.file_name}}"
+{{end}}
+	; {{zoo_class.name}}.EQUs
+{{for equ in zoo_class.equs}} {{equ.value.name}}		.equ {{equ.value.value}}
+{{end}}
+	; {{zoo_class.name}}.Properties
+{{for property in zoo_class.properties}}{{zoo_class.name}}.{{property.value.name}}.offset:	.equ {{property.value.offset}}	; Size = {{property.value.size}}
+{{end}}
+	.area _DATA
+{{zoo_class.name}}.ClassNameStr::		.strz "{{zoo_class.name}}"
+
+{{zoo_class.name}}::
+{{zoo_class.name}}.ClassName::			.dw {{zoo_class.name}}.ClassNameStr
+{{zoo_class.name}}.ParentClass::		.dw {{if zoo_class.parent_class}}{{zoo_class.parent_class.name}}{{else}}#0{{end}}
+{{zoo_class.name}}.SisterClass::		.dw #0
+{{zoo_class.name}}.ChildChain::			.dw #0
+{{zoo_class.name}}.ObjectSize::			.dw {{zoo_class.object_size}}
+{{zoo_class.name}}.Methods::
+{{for method in zoo_class.methods}}{{zoo_class.name}}.{{method.value.name}}::	.dw {{if method.value.is_abstract}}#0{{else}}_{{method.value.base_class.name}}.{{method.value.name}}
+{{end}}{{end}}
+	.area _CODE
+{{for method in zoo_class.methods}}{{if !method.value.is_abstract}}_{{zoo_class.name}}.{{method.value.name}}::
+{{method.value.body}}
+{{end}}
+{{end}}
