@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{FEF04793-7321-4949-8A69-AF021B4E63EE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>Zoo</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>make $(Configuration) $(ProjectName)</NMakeBuildCommandLine>
+    <NMakeOutput>$(ProjectName).com</NMakeOutput>
+    <NMakeCleanCommandLine>make $(Configuration) $(ProjectName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make $(Configuration) $(ProjectName) clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakeBuildCommandLine>make</NMakeBuildCommandLine>
+    <NMakeOutput>$(ProjectName).com</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>make $(Configuration) $(ProjectName)</NMakeBuildCommandLine>
+    <NMakeOutput>$(ProjectName).com</NMakeOutput>
+    <NMakeCleanCommandLine>make $(Configuration) $(ProjectName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make $(Configuration) $(ProjectName) clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeBuildCommandLine>make</NMakeBuildCommandLine>
+    <NMakeOutput>$(ProjectName).com</NMakeOutput>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\libs\util\printf.c" />
+    <ClCompile Include="..\..\..\libs\util\types.c" />
+    <ClCompile Include="Zoo.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\ayfx_player.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\io.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\msx_fusion.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\newTypes.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\psg.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\pt3replayer.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\rammapper.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vars_msxBios.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vars_msxDos.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vars_msxSystem.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_circle.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_graph1.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_graph2.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_sprites.h" />
+    <ClInclude Include="..\..\..\libs\fusion-c\header\__interrupt.h" />
+    <ClInclude Include="..\..\..\libs\msxdos\dos2.h" />
+    <ClInclude Include="..\..\..\libs\msx\msxbios.h" />
+    <ClInclude Include="..\..\..\libs\msx\msxbiostools.h" />
+    <ClInclude Include="..\..\..\libs\msx\msxinterrupt.h" />
+    <ClInclude Include="..\..\..\libs\msx\msxkeyboard.h" />
+    <ClInclude Include="..\..\..\libs\msx\msxvdp.h" />
+    <ClInclude Include="..\..\..\libs\util\conio.h" />
+    <ClInclude Include="..\..\..\libs\util\debug.h" />
+    <ClInclude Include="..\..\..\libs\util\printf.h" />
+    <ClInclude Include="..\..\..\libs\util\types.h" />
+    <ClInclude Include="..\..\..\libs\z80\z80io.h" />
+    <ClInclude Include="TargetConfig.h" />
+    <ClInclude Include="zoo.test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\libs\msxdos\crt0msx_msxdos_simple.s" />
+    <None Include="..\..\..\libs\msxdos\dos2.s" />
+    <None Include="..\..\..\libs\msx\msxbios.s" />
+    <None Include="..\..\..\libs\msx\msxbiostools.s" />
+    <None Include="..\..\..\libs\msx\msxinterrupt.s" />
+    <None Include="..\..\..\libs\msx\msxkeyboard.s" />
+    <None Include="..\..\..\libs\msx\msxui_component.s" />
+    <None Include="..\..\..\libs\msx\msxvdp.asm" />
+    <None Include="..\..\..\libs\msx\msxvdp.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_constants.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_drawtext.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_enable.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_graphics.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_drawtextbox.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_sprites.s" />
+    <None Include="..\..\..\libs\msx\msxvdp_utils.s" />
+    <None Include="..\..\..\Libs\OPENMSX_PROFILING\profile.tcl" />
+    <None Include="..\..\..\libs\profiling\OpenMSXProfiling.s" />
+    <None Include="..\..\..\libs\util\getchar.s" />
+    <None Include="..\..\..\libs\util\math.asm" />
+    <None Include="..\..\..\libs\util\math_16bitmultiplication.s" />
+    <None Include="..\..\..\libs\util\math_8bitmultiplication.s" />
+    <None Include="..\..\..\libs\util\putchar.s" />
+    <None Include="..\..\..\libs\z80\z80io.s" />
+    <None Include="..\..\..\libs\z80\z80unofficial.s" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r3_classstructure.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r3_classstructure.s" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r1_inheritance.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r1_inheritance.s" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.methodaccessorsforobjects.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.propertyaccessorsforclasses.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.methods.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.pointers.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.properties.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.propertiespointers.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.propertyaccessorsforobjects.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.reflection.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.staticproperties.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r2_namedinheritance.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r2_namedinheritance.s" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r4_namedmembers.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r4_namedmembers.s" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r0_none.asm" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r0_none.s" />
+    <None Include="..\..\..\libs\zoo\engine\zoo.s" />
+    <None Include="Debug\objs\zoo.package.asm" />
+    <None Include="Debug\objs\zoo.package.s" />
+    <None Include="TargetConfig.s" />
+    <None Include="TargetConfig_Debug.txt" />
+    <None Include="TargetConfig_Release.txt" />
+    <None Include="make.bat" />
+    <None Include="zoo.test.s" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="IncludeDirectories.txt" />
+    <Text Include="LibrarySources.txt" />
+    <Text Include="AssemblerSources.txt" />
+    <Text Include="RELs.txt" />
+    <Text Include="ZooPackage.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\..\libs\zoo\framework\zoo.class.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\libs\zoo\framework\Bitmap.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Control.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\InvalidArea.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Label.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\VDP9938.xml" />
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\Console.xml" />
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\Keyboard.xml" />
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\VDP.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Object.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Panel.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Rectangle.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\ScreenManager.xml" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

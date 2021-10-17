@@ -1,0 +1,10 @@
+;[MSX_LIB_PATH]\zoo\framework\Object.xml
+[MSX_LIB_PATH]\zoo\framework\Bitmap.xml
+[MSX_LIB_PATH]\zoo\framework\MSX\VDP9938.xml
+[MSX_LIB_PATH]\zoo\framework\Panel.xml
+[MSX_LIB_PATH]\zoo\framework\Rectangle.xml
+;[MSX_LIB_PATH]\zoo\framework\Label.xml
+[MSX_LIB_PATH]\zoo\framework\MSX\Console.xml
+[MSX_LIB_PATH]\zoo\framework\MSX\Keyboard.xml
+
+

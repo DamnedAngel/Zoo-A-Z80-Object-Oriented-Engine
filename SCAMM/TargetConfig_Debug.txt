@@ -1,0 +1,2 @@
+DEBUG 1						// _off: not defined ; 1: debug ; 2: error; 3: fatal
+OPENMSX_PROFILING _ON

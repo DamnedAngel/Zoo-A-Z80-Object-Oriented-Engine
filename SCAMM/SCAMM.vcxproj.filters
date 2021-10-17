@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="C Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ASM Source Files">
+      <UniqueIdentifier>{bb1c1334-70a2-4cfc-983e-628ef68466d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\Z80">
+      <UniqueIdentifier>{401c8b14-c17a-4965-9e2d-84b27530f8b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\MSX">
+      <UniqueIdentifier>{3c4d52e0-ddcc-44af-accd-14619aba7583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MSX">
+      <UniqueIdentifier>{b2fac353-7647-4007-a589-0c023000a8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MSXDOS">
+      <UniqueIdentifier>{9c2250a5-e59d-4b5e-9398-e919e81da9ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TCL Scripts">
+      <UniqueIdentifier>{a7fa5c04-2f5e-475d-ad35-9c756ca3fe10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\MSXDOS">
+      <UniqueIdentifier>{ca33d757-bbf7-43d5-8577-970f145d4924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\Profiling">
+      <UniqueIdentifier>{a7779770-d7fa-4f03-b200-4e40556c9679}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\Util">
+      <UniqueIdentifier>{b0c998f2-4faa-41a3-87d8-622693380c2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="C Source Files\Util">
+      <UniqueIdentifier>{4da59d5a-b940-49c3-ab82-ab013eea6c34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{7c2a20f5-0247-4f61-8a41-ef4d18252553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Z80">
+      <UniqueIdentifier>{febdf6af-9ff2-47a5-88dd-35c03334c65f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\MSX\VDP">
+      <UniqueIdentifier>{cd65a59c-8ee0-4307-b81a-80cbe6a6039f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\MSX\GUI">
+      <UniqueIdentifier>{03798589-4d41-4ca4-8d3f-e85122c65791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ASM Source Files\Zoo">
+      <UniqueIdentifier>{88e63b70-20bc-4f37-9cfd-b7c5e927b437}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\fusion-c">
+      <UniqueIdentifier>{257f1ed0-d991-40f9-a644-ebe87a04866b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files">
+      <UniqueIdentifier>{2ed3f5bd-79e7-49fb-8737-401f6d7471a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Zoo">
+      <UniqueIdentifier>{06ac706d-e1ba-4e57-a0b9-bd635e894727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Zoo\MSX">
+      <UniqueIdentifier>{cfff1a83-d677-4fd4-a9ff-aa42133d5d1f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\libs\util\printf.c">
+      <Filter>C Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libs\util\types.c">
+      <Filter>C Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Zoo.c">
+      <Filter>C Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\libs\msx\msxbios.h">
+      <Filter>Header Files\MSX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\msx\msxbiostools.h">
+      <Filter>Header Files\MSX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\msx\msxinterrupt.h">
+      <Filter>Header Files\MSX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\msx\msxkeyboard.h">
+      <Filter>Header Files\MSX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\msx\msxvdp.h">
+      <Filter>Header Files\MSX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\msxdos\dos2.h">
+      <Filter>Header Files\MSXDOS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\util\conio.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\util\debug.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\util\printf.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\util\types.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\z80\z80io.h">
+      <Filter>Header Files\Z80</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\__interrupt.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\ayfx_player.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\io.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\msx_fusion.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\newTypes.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\psg.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\pt3replayer.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\rammapper.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vars_msxBios.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vars_msxDos.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vars_msxSystem.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_circle.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_graph1.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_graph2.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libs\fusion-c\header\vdp_sprites.h">
+      <Filter>Header Files\fusion-c</Filter>
+    </ClInclude>
+    <ClInclude Include="zoo.test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="make.bat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\Libs\OPENMSX_PROFILING\profile.tcl">
+      <Filter>TCL Scripts</Filter>
+    </None>
+    <None Include="TargetConfig.s">
+      <Filter>ASM Source Files</Filter>
+    </None>
+    <None Include="TargetConfig_Debug.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="TargetConfig_Release.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxbios.s">
+      <Filter>ASM Source Files\MSX</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxbiostools.s">
+      <Filter>ASM Source Files\MSX</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxinterrupt.s">
+      <Filter>ASM Source Files\MSX</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxkeyboard.s">
+      <Filter>ASM Source Files\MSX</Filter>
+    </None>
+    <None Include="..\..\..\libs\msxdos\crt0msx_msxdos_simple.s">
+      <Filter>ASM Source Files\MSXDOS</Filter>
+    </None>
+    <None Include="..\..\..\libs\msxdos\dos2.s">
+      <Filter>ASM Source Files\MSXDOS</Filter>
+    </None>
+    <None Include="..\..\..\libs\profiling\OpenMSXProfiling.s">
+      <Filter>ASM Source Files\Profiling</Filter>
+    </None>
+    <None Include="..\..\..\libs\z80\z80io.s">
+      <Filter>ASM Source Files\Z80</Filter>
+    </None>
+    <None Include="..\..\..\libs\z80\z80unofficial.s">
+      <Filter>ASM Source Files\Z80</Filter>
+    </None>
+    <None Include="..\..\..\libs\util\getchar.s">
+      <Filter>ASM Source Files\Util</Filter>
+    </None>
+    <None Include="..\..\..\libs\util\putchar.s">
+      <Filter>ASM Source Files\Util</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp.asm">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_constants.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_enable.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_graphics.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_sprites.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_utils.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_drawtextbox.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxvdp_drawtext.s">
+      <Filter>ASM Source Files\MSX\VDP</Filter>
+    </None>
+    <None Include="..\..\..\libs\msx\msxui_component.s">
+      <Filter>ASM Source Files\MSX\GUI</Filter>
+    </None>
+    <None Include="..\..\..\libs\util\math.asm">
+      <Filter>ASM Source Files\Util</Filter>
+    </None>
+    <None Include="..\..\..\libs\util\math_16bitmultiplication.s">
+      <Filter>ASM Source Files\Util</Filter>
+    </None>
+    <None Include="..\..\..\libs\util\math_8bitmultiplication.s">
+      <Filter>ASM Source Files\Util</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.s">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="zoo.test.s">
+      <Filter>ASM Source Files</Filter>
+    </None>
+    <None Include="Debug\objs\zoo.package.s">
+      <Filter>ASM Source Files</Filter>
+    </None>
+    <None Include="Debug\objs\zoo.package.asm">
+      <Filter>ASM Source Files</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.pointers.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.methods.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.properties.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.propertiespointers.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.reflection.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.staticproperties.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.propertyaccessorsforclasses.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.propertyaccessorsforobjects.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.macros.methodaccessorsforobjects.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r1_inheritance.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r1_inheritance.s">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r2_namedinheritance.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r2_namedinheritance.s">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r0_none.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r3_classstructure.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r3_classstructure.s">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r4_namedmembers.asm">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r4_namedmembers.s">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+    <None Include="..\..\..\libs\zoo\engine\zoo.reflection.r0_none.s">
+      <Filter>ASM Source Files\Zoo</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="AssemblerSources.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="IncludeDirectories.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="RELs.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="LibrarySources.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="ZooPackage.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\..\libs\zoo\framework\zoo.class.xsd">
+      <Filter>XML Files\Zoo</Filter>
+    </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\libs\zoo\framework\Bitmap.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Control.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Object.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Panel.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\VDP.xml">
+      <Filter>XML Files\Zoo\MSX</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\Console.xml">
+      <Filter>XML Files\Zoo\MSX</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\Keyboard.xml">
+      <Filter>XML Files\Zoo\MSX</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\MSX\VDP9938.xml">
+      <Filter>XML Files\Zoo\MSX</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Rectangle.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\Label.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\ScreenManager.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+    <Xml Include="..\..\..\libs\zoo\framework\InvalidArea.xml">
+      <Filter>XML Files\Zoo</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

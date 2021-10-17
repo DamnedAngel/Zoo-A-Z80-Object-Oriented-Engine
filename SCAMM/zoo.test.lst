@@ -1,0 +1,747 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 1.
+Hexadecimal [16-Bits]
+
+
+
+                              1 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
+Hexadecimal [16-Bits]
+
+
+
+                              2 	.include "..\..\..\libs\zoo\engine\zoo.asm"
+                              1 	.globl _zoo_call_hl
+                              2 
+                              3 ;---------------------------------------------------------
+                              4 ;---------------------------------------------------------
+                              5 ;- Basic Class Operations / Class defined
+                              6 ;---------------------------------------------------------
+                              7 ;---------------------------------------------------------
+                              8 
+                              9 ;---------------------------------------------------------
+                             10 ; Define Object
+                             11 ;---------------------------------------------------------
+                             12 	.macro Zoo.DefObj class,object
+                             13 object':
+                             14 	.dw		#class								; pressuposes pParentClass.offset = 0
+                             15 	.blkb	#class'._Size - 2
+                             16 	.endm
+                             17 
+                             18 ;---------------------------------------------------------
+                             19 ; Set Object
+                             20 ;---------------------------------------------------------
+                             21 ; Output:
+                             22 ;	IY			= pObject
+                             23 ;---------------------------------------------------------
+                             24 	.macro Zoo.SetObj object
+                             25 	ld IY, #object
+                             26 	.endm
+                             27 	
+                             28 ;---------------------------------------------------------
+                             29 ; Set Class (object in IY)
+                             30 ;---------------------------------------------------------
+                             31 ; Input:
+                             32 ;	IY			= pObject
+                             33 ; Output:
+                             34 ;---------------------------------------------------------
+                             35 	.macro Zoo.SetClass class
+                             36 	ld 0(IY), #<'class							; pressuposes pParentClass.offset = 0
+                             37 	ld 1(IY), #>'class							; pressuposes pParentClass.offset = 0
+                             38 	.endm
+                             39 
+                             40 ;---------------------------------------------------------
+                             41 ; Set Class for object.
+                             42 ;---------------------------------------------------------
+                             43 ; Output:
+                             44 ;	IY			= pObject
+                             45 ;---------------------------------------------------------
+                             46 	.macro Zoo.SetObjClass object,class
+                             47 	Zoo.SetObj ^/object/
+                             48 	Zoo.SetClass ^/class/
+                             49 	.endm
+                             50 
+                             51 ;---------------------------------------------------------
+                             52 ; Get Class (object in IY)
+                             53 ;---------------------------------------------------------
+                             54 ; Input:
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
+Hexadecimal [16-Bits]
+
+
+
+                             55 ;	IY			= pObject
+                             56 ; Output:
+                             57 ;	HiReg,LoReg = pClass
+                             58 ;---------------------------------------------------------
+                             59 	.macro Zoo.GetClass HiReg, LoReg
+                             60 	ld LoReg, 0(IY)								; pressuposes pParentClass.offset = 0
+                             61 	ld HiReg, 1(IY)								; pressuposes pParentClass.offset = 0
+                             62 	.endm
+                             63 
+                             64 ;---------------------------------------------------------
+                             65 ; Get Object Class
+                             66 ;---------------------------------------------------------
+                             67 ; Input:
+                             68 ; Output:
+                             69 ;	IY			= pObject
+                             70 ;	HiReg,LoReg = pClass
+                             71 ;---------------------------------------------------------
+                             72 	.macro Zoo.GetObjClass object
+                             73 	Zoo.SetObj ^/object/
+                             74 	Zoo.GetClass HiReg, LoReg
+                             75 	.endm
+                             76 
+                             77 ;---------------------------------------------------------
+                             78 ; Safe Set Class for object (preserve IY)
+                             79 ;---------------------------------------------------------
+                             80 ; Output:
+                             81 ;	HL			= pObject
+                             82 ;---------------------------------------------------------
+                             83 	.macro Zoo.SafeSetObjClass object,class
+                             84 	ld HL, object+1								; pressuposes pParentClass.offset = 0
+                             85 	ld (HL), #>'class
+                             86 	dec HL
+                             87 	ld (HL), #<'class
+                             88 	.endm
+                             89 
+                             90 ;---------------------------------------------------------
+                             91 ; Call Method, class already in HL
+                             92 ;---------------------------------------------------------
+                             93 ; Call method for object IY, class HL.
+                             94 ; Be very cautious when using this, since there could be
+                             95 ; a mismatch between Class in HL and the object.
+                             96 ; If a direct call to the method of a specific class is intended,
+                             97 ; please use "call <class>.<method>" directly.
+                             98 ; IY, HL and BC cannot be used to transfer parameters.
+                             99 ;---------------------------------------------------------
+                            100 ; Input:
+                            101 ;	IY			= pObject
+                            102 ;	HL			= pClass
+                            103 ; Output:
+                            104 ;---------------------------------------------------------
+                            105 	.macro Zoo.CallMethClassInHL method
+                            106 	ld bc, #method'.offset
+                            107 	add hl, bc
+                            108 	call _zoo_call_hl
+                            109 	.endm
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
+Hexadecimal [16-Bits]
+
+
+
+                            110 
+                            111 ;---------------------------------------------------------
+                            112 ; Call Method
+                            113 ;---------------------------------------------------------
+                            114 ; Call method for object IY, considering polymorphism.
+                            115 ; If a direct call to the method of a specific class is intended,
+                            116 ; please use "call <class>.<method>" directly.
+                            117 ; IY, HL and BC cannot be used to transfer parameters.
+                            118 ;---------------------------------------------------------
+                            119 ; Input:
+                            120 ;	IY			= pObject
+                            121 ; Output:
+                            122 ;---------------------------------------------------------
+                            123 	.macro Zoo.CallMeth method
+                            124 	Zoo.GetClass H, L
+                            125 	Zoo.CallMethClassInHL method
+                            126 	.endm
+                            127 
+                            128 ;---------------------------------------------------------
+                            129 ; Call Object Method
+                            130 ;---------------------------------------------------------
+                            131 ; Call method for object IY, considering polymorphism.
+                            132 ; If a direct call to the method of a specific class is intended,
+                            133 ; please use "call <class>.<method>" directly.
+                            134 ; If object is supplied, loads object in IY before the call.
+                            135 ; IY, HL and BC cannot be used to transfer parameters.
+                            136 ;---------------------------------------------------------
+                            137 ; Output:
+                            138 ;	IY			= pObject
+                            139 ;---------------------------------------------------------
+                            140 	.macro Zoo.CallObjMeth object,method
+                            141 	Zoo.SetObj ^/object/
+                            142 	Zoo.CallMeth method
+                            143 	.endm
+                            144 
+                            145 ;---------------------------------------------------------
+                            146 ; Init
+                            147 ;---------------------------------------------------------
+                            148 ; Calls Constructor for the class-defined object in IY.
+                            149 ; IY, HL and BC cannot be used to transfer parameters.
+                            150 ;---------------------------------------------------------
+                            151 ; Input:
+                            152 ;	IY			= Class-defined pObject
+                            153 ; Output:
+                            154 ;---------------------------------------------------------
+                            155 	.macro Zoo.Init
+                            156 	Zoo.CallMeth Object.Constructor
+                            157 	.endm
+                            158 
+                            159 ;---------------------------------------------------------
+                            160 ; Init Object
+                            161 ;---------------------------------------------------------
+                            162 ; Calls a class-defined object's Constructor.
+                            163 ; IY, HL and BC cannot be used to transfer parameters.
+                            164 ;---------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
+Hexadecimal [16-Bits]
+
+
+
+                            165 ; Input:
+                            166 ; Output:
+                            167 ;	IY			= pObject
+                            168 ;---------------------------------------------------------
+                            169 	.macro Zoo.InitObj object
+                            170 	Zoo.CallObjMeth ^/object/,Object.Constructor
+                            171 	.endm
+                            172 
+                            173 ;---------------------------------------------------------
+                            174 ; Init with class (Object in IY)
+                            175 ;---------------------------------------------------------
+                            176 ; Sets the class and calls Constructor for the object in IY.
+                            177 ; IY cannot be used to transfer parameters.
+                            178 ;---------------------------------------------------------
+                            179 ; Input:
+                            180 ;	IY			= pObject
+                            181 ; Output:
+                            182 ;---------------------------------------------------------
+                            183 	.macro Zoo.InitWithClass class
+                            184 	Zoo.SetClass class
+                            185 	Zoo.Init
+                            186 	.endm
+                            187 
+                            188 ;---------------------------------------------------------
+                            189 ; Init Object with class
+                            190 ;---------------------------------------------------------
+                            191 ; Sets the class and calls Constructor for the object in IY.
+                            192 ; IY, HL and BC cannot be used to transfer parameters.
+                            193 ;---------------------------------------------------------
+                            194 ; Input:
+                            195 ; Output:
+                            196 ;	IY			= pObject
+                            197 ;---------------------------------------------------------
+                            198 	.macro Zoo.InitObjWithClass object, class
+                            199 	Zoo.SetObjClass object, class
+                            200 	Zoo.Init
+                            201 	.endm
+                            202 
+                            203 ;---------------------------------------------------------
+                            204 ; Destroy (Object in IY)
+                            205 ;---------------------------------------------------------
+                            206 ; Calls destructor of object in IY.
+                            207 ;---------------------------------------------------------
+                            208 ; Input:
+                            209 ;	IY			= pObject
+                            210 ; Output:
+                            211 ;---------------------------------------------------------
+                            212 	.macro Zoo.Destroy
+                            213 	Zoo.CallMeth Object.Constructor
+                            214 	.endm
+                            215 
+                            216 ;---------------------------------------------------------
+                            217 ; Destroy Object
+                            218 ;---------------------------------------------------------
+                            219 ; Calls destructor of object.
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 6.
+Hexadecimal [16-Bits]
+
+
+
+                            220 ;---------------------------------------------------------
+                            221 ; Input:
+                            222 ; Output:
+                            223 ;---------------------------------------------------------
+                            224 	.macro Zoo.DestroyObj object
+                            225 	Zoo.CallObjMeth ^/object/,Object.Constructor
+                            226 	.endm
+                            227 
+                            228 ;---------------------------------------------------------
+                            229 ; Call Static Method / Class defined
+                            230 ;---------------------------------------------------------
+                            231 	.macro CallClassSMeth class, smeth
+                            232 	call class'.'smeth
+                            233 	.endm
+                            234 	
+                            235 ;---------------------------------------------------------
+                            236 ; Call Method / Class defined
+                            237 ;---------------------------------------------------------
+                            238 ; Input:
+                            239 ;	IY			= Object
+                            240 ;---------------------------------------------------------
+                            241 	.macro CallClassMeth class, smeth
+                            242 	call class'.'smeth
+                            243 	.endm
+                            244 
+                            245 ;---------------------------------------------------------
+                            246 ;---------------------------------------------------------
+                            247 ;- Reflection Data Operations / Class defined
+                            248 ;---------------------------------------------------------
+                            249 ;---------------------------------------------------------
+                            250 
+                            251 ;---------------------------------------------------------
+                            252 ; Get Reflection Property / Class defined
+                            253 ;---------------------------------------------------------
+                            254 ; dest = A, BC, DE, HL, IX, IY, SP
+                            255 ;---------------------------------------------------------
+                            256 	.macro GetRefClassProp dest, class, prop
+                            257 	ld dest, (#class'.'prop)
+                            258 	.endm
+                            259 
+                            260 ;---------------------------------------------------------
+                            261 ; Get Reflection Property Pointer / Class defined
+                            262 ;---------------------------------------------------------
+                            263 ; dest = BC, DE, HL, IX, IY, SP
+                            264 ;---------------------------------------------------------
+                            265 	.macro GetRefClassPropPtr dest, class, prop
+                            266 	ld dest, #class'.'prop'
+                            267 	.endm
+                            268 
+                            269 ;---------------------------------------------------------
+                            270 ; Set Reflection Property / Class defined
+                            271 ;---------------------------------------------------------
+                            272 ; src = A, BC, DE, HL, IX, IY, SP
+                            273 ;---------------------------------------------------------
+                            274 	.macro SetRefClassProp class, prop, src
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 7.
+Hexadecimal [16-Bits]
+
+
+
+                            275 	ld (#class'.'prop), src
+                            276 	.endm
+                            277 	
+                            278 ;---------------------------------------------------------
+                            279 ;---------------------------------------------------------
+                            280 ;- Reflection Data Operations / Class in IY
+                            281 ;---------------------------------------------------------
+                            282 ;---------------------------------------------------------
+                            283 
+                            284 ;---------------------------------------------------------
+                            285 ; Get Reflection Property (8 bits) / Class in IY
+                            286 ;---------------------------------------------------------
+                            287 ; Input:
+                            288 ;	IY			= class
+                            289 ;	dest		= a, b, c, d, e, h, l
+                            290 ; Output:
+                            291 ;	dest		= Property
+                            292 ;---------------------------------------------------------
+                            293 	.macro GetRefProp8 dest, prop
+                            294 	ld dest, Class.'prop'.offset(IY)
+                            295 	.endm
+                            296 
+                            297 ;---------------------------------------------------------
+                            298 ; Get Reflection Property (16 bits) / Class in IY
+                            299 ;---------------------------------------------------------
+                            300 ; Input:
+                            301 ;	IY			= class
+                            302 ;	destXXX		= a, b, c, d, e, h, l
+                            303 ; Output:
+                            304 ;	dest		= Property
+                            305 ;---------------------------------------------------------
+                            306 	.macro GetRefProp16 destMSB, destLSB, prop
+                            307 	ld destLSB, Class.'prop'.offset(IY)
+                            308 	ld destMSB, Class.'prop'.offset+1(IY)
+                            309 	.endm
+                            310 
+                            311 ;---------------------------------------------------------
+                            312 ; Get Reflection Prop Pointer on HL / Class in IY
+                            313 ;---------------------------------------------------------
+                            314 ; Input:
+                            315 ;	IY			= class
+                            316 ; Output:
+                            317 ;	HL			= Pointer to property
+                            318 ;	BC			= Class.'prop'.offset
+                            319 ;---------------------------------------------------------
+                            320 	.macro GetRefPropPtr_HL prop
+                            321 	push iy
+                            322 	pop hl
+                            323     ld bc, #Class.'prop'.offset
+                            324     add hl, bc
+                            325 	.endm
+                            326 
+                            327 ;---------------------------------------------------------
+                            328 ; Set Reflection Property (8 bits) / Class in IY
+                            329 ;---------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 8.
+Hexadecimal [16-Bits]
+
+
+
+                            330 ; Input:
+                            331 ;	IY			= class
+                            332 ;	value		= a, b, c, d, e, h, l, *
+                            333 ;---------------------------------------------------------
+                            334 	.macro SetRefProp8 prop, value
+                            335 	ld Class.'prop'.offset(IY), value
+                            336 	.endm
+                            337 
+                            338 ;---------------------------------------------------------
+                            339 ; Set Reflection Property (16 bits) / Class in IY
+                            340 ;---------------------------------------------------------
+                            341 ; Input:
+                            342 ;	IY			= class
+                            343 ;	valueXXX	= a, b, c, d, e, h, l, *
+                            344 ;---------------------------------------------------------
+                            345 	.macro SetRefProp16 prop, valueMSB, valueLSB
+                            346 	ld Class.'prop'.offset(IY), valueLSB
+                            347 	ld Class.'prop'.offset+1(IY), valueMSB
+                            348 	.endm
+                            349 
+                            350 ;---------------------------------------------------------
+                            351 ;---------------------------------------------------------
+                            352 ;- Static properties operations / Class defined
+                            353 ;---------------------------------------------------------
+                            354 ;---------------------------------------------------------
+                            355 
+                            356 ;---------------------------------------------------------
+                            357 ; Get Static Property / Class defined
+                            358 ;---------------------------------------------------------
+                            359 ; dest = A, BC, DE, HL, IX, IY, SP
+                            360 ;---------------------------------------------------------
+                            361 	.macro GetStClassProp dest, class, prop
+                            362 	ld dest, (#class'.sprop.'prop)
+                            363 	.endm
+                            364 
+                            365 ;---------------------------------------------------------
+                            366 ; Get Static Property Pointer / Class defined
+                            367 ;---------------------------------------------------------
+                            368 ; dest = BC, DE, HL, IX, IY, SP
+                            369 ;---------------------------------------------------------
+                            370 	.macro GetStClassPropPtr dest, class, prop
+                            371 	ld dest, #class'.sprop.'prop'
+                            372 	.endm
+                            373 
+                            374 ;---------------------------------------------------------
+                            375 ; Set Static Property / Class defined
+                            376 ;---------------------------------------------------------
+                            377 ; src = A, BC, DE, HL, IX, IY, SP
+                            378 ;---------------------------------------------------------
+                            379 	.macro SetStClassProp class, prop, src
+                            380 	ld (#class'.sprop.'prop), src
+                            381 	.endm
+                            382 
+                            383 
+                            384 ;---------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 9.
+Hexadecimal [16-Bits]
+
+
+
+                            385 ;---------------------------------------------------------
+                            386 ;- Property Operations / Object in IY, Class defined
+                            387 ;---------------------------------------------------------
+                            388 ;---------------------------------------------------------
+                            389 
+                            390 ;---------------------------------------------------------
+                            391 ; Get Property (8 bits) / Object in IY, Class defined
+                            392 ;---------------------------------------------------------
+                            393 ; Input:
+                            394 ;	IY			= class
+                            395 ;	dest		= a, b, c, d, e, h, l
+                            396 ; Output:
+                            397 ;	dest		= Property
+                            398 ;---------------------------------------------------------
+                            399 	.macro GetProp8 dest, class, prop
+                            400 	ld dest, class'.'prop'.offset(IY)
+                            401 	.endm
+                            402 
+                            403 ;---------------------------------------------------------
+                            404 ; Get Property (16 bits) / Object in IY, Class defined
+                            405 ;---------------------------------------------------------
+                            406 ; Input:
+                            407 ;	IY			= class
+                            408 ;	destXXX		= a, b, c, d, e, h, l
+                            409 ; Output:
+                            410 ;	dest		= Property
+                            411 ;---------------------------------------------------------
+                            412 	.macro GetProp16 destMSB, destLSB, class, prop
+                            413 	ld destLSB, class'.'prop'.offset(IY)
+                            414 	ld destMSB, class'.'prop'.offset+1(IY)
+                            415 	.endm
+                            416 
+                            417 ;---------------------------------------------------------
+                            418 ; Get Property Pointer on HL / Object in IY, Class defined
+                            419 ;---------------------------------------------------------
+                            420 ; Input:
+                            421 ;	IY			= class
+                            422 ; Output:
+                            423 ;	HL			= Pointer to property
+                            424 ;	BC			= Class.'prop'.offset
+                            425 ;---------------------------------------------------------
+                            426 	.macro GetPropPtr_HL class, prop
+                            427 	push iy
+                            428 	pop hl
+                            429     ld bc, #class'.'prop'.offset
+                            430     add hl, bc
+                            431 	.endm
+                            432 
+                            433 ;---------------------------------------------------------
+                            434 ; Set Property (8 bits) / Object in IY, Class defined
+                            435 ;---------------------------------------------------------
+                            436 ; Input:
+                            437 ;	IY			= class
+                            438 ;	value		= a, b, c, d, e, h, l, *
+                            439 ;---------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 10.
+Hexadecimal [16-Bits]
+
+
+
+                            440 	.macro SetProp8 class, prop, value
+                            441 	ld class'.'prop'.offset(IY), value
+                            442 	.endm
+                            443 
+                            444 ;---------------------------------------------------------
+                            445 ; Set Property (16 bits) / Object in IY, Class defined
+                            446 ;---------------------------------------------------------
+                            447 ; Input:
+                            448 ;	IY			= class
+                            449 ;	valueXXX	= a, b, c, d, e, h, l, *
+                            450 ;---------------------------------------------------------
+                            451 	.macro SetProp16 class, prop, valueMSB, valueLSB
+                            452 	ld class'.'prop'.offset(IY), valueLSB
+                            453 	ld class'.'prop'.offset+1(IY), valueMSB
+                            454 	.endm
+                            455 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 11.
+Hexadecimal [16-Bits]
+
+
+
+                              3 	.include "Debug\objs\zoo.package.asm"
+                              1 ; ----------------------------------------------------------------
+                              2 ; - EQUs
+                              3 ; ----------------------------------------------------------------
+                              4 
+                              5 ; ----------------------------------------------------------------
+                              6 ; - Object Size
+                              7 ; ----------------------------------------------------------------
+                     0002     8 Object._Size	.equ 2
+                     000B     9 Control._Size	.equ 11
+                     000E    10 Panel._Size	.equ 14
+                             11 
+                             12 ; ----------------------------------------------------------------
+                             13 ; - Offsets
+                             14 ; ----------------------------------------------------------------
+                             15 ; ----------------------------------------------------------------
+                             16 ; - Properties Offsets/Object Reflection Data
+                             17 ; ----------------------------------------------------------------
+                     0000    18 Object.pClass.offset	.equ 0	; Size = 2 (1 instances of size 2)
+                             19 
+                     0000    20 Control.pClass.offset	.equ 0	; Size = 2 (1 instances of size 2)
+                     0002    21 Control.Flags.offset	.equ 2	; Size = 1 (1 instances of size 1)
+                     0003    22 Control.X.offset	.equ 3	; Size = 2 (1 instances of size 2)
+                     0005    23 Control.Y.offset	.equ 5	; Size = 2 (1 instances of size 2)
+                     0007    24 Control.Width.offset	.equ 7	; Size = 2 (1 instances of size 2)
+                     0009    25 Control.Height.offset	.equ 9	; Size = 2 (1 instances of size 2)
+                             26 
+                     0000    27 Panel.pClass.offset	.equ 0	; Size = 2 (1 instances of size 2)
+                     0002    28 Panel.Flags.offset	.equ 2	; Size = 1 (1 instances of size 1)
+                     0003    29 Panel.X.offset	.equ 3	; Size = 2 (1 instances of size 2)
+                     0005    30 Panel.Y.offset	.equ 5	; Size = 2 (1 instances of size 2)
+                     0007    31 Panel.Width.offset	.equ 7	; Size = 2 (1 instances of size 2)
+                     0009    32 Panel.Height.offset	.equ 9	; Size = 2 (1 instances of size 2)
+                     000B    33 Panel.Color.offset	.equ 11	; Size = 1 (1 instances of size 1)
+                     000C    34 Panel.Direction.offset	.equ 12	; Size = 1 (1 instances of size 1)
+                     000D    35 Panel.PaintOperation.offset	.equ 13	; Size = 1 (1 instances of size 1)
+                             36 
+                             37 
+                             38 ; ----------------------------------------------------------------
+                             39 ; - Methods References/Class Reflection Data
+                             40 ; ----------------------------------------------------------------
+                     0000    41 Object.pParentClass.offset	.equ 0
+                     0002    42 Object.pSProperties.offset	.equ 2
+                     0004    43 Object.pSMethods.offset	.equ 4
+                     0006    44 Object.ObjectSize.offset	.equ 6
+                     0007    45 Object.Constructor.offset	.equ 7
+                     0009    46 Object.Destructor.offset	.equ 9
+                             47 
+                     0000    48 Control.pParentClass.offset	.equ 0
+                     0002    49 Control.pSProperties.offset	.equ 2
+                     0004    50 Control.pSMethods.offset	.equ 4
+                     0006    51 Control.ObjectSize.offset	.equ 6
+                     0007    52 Control.Constructor.offset	.equ 7
+                     0009    53 Control.Destructor.offset	.equ 9
+                     000B    54 Control.Paint.offset	.equ 11
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 12.
+Hexadecimal [16-Bits]
+
+
+
+                             55 
+                     0000    56 Panel.pParentClass.offset	.equ 0
+                     0002    57 Panel.pSProperties.offset	.equ 2
+                     0004    58 Panel.pSMethods.offset	.equ 4
+                     0006    59 Panel.ObjectSize.offset	.equ 6
+                     0007    60 Panel.Constructor.offset	.equ 7
+                     0009    61 Panel.Destructor.offset	.equ 9
+                     0000    62 Panel.Paint.offset	.equ 0
+                             63 
+                             64 
+                             65 ; ----------------------------------------------------------------
+                             66 ; - Static Properties
+                             67 ; ----------------------------------------------------------------
+                             68 
+                             69 
+                             70 
+                             71 
+                             72 
+                             73 
+                             74 
+                             75 ; ----------------------------------------------------------------
+                             76 ; - Static Methods References
+                             77 ; ----------------------------------------------------------------
+                             78 
+                             79 
+                             80 
+                             81 
+                             82 
+                             83 ; ----------------------------------------------------------------
+                             84 ; - Global symbols
+                             85 ; ----------------------------------------------------------------
+                             86 ; ----------------------------------------------------------------
+                             87 ; - Classes
+                             88 ; ----------------------------------------------------------------
+                             89 	.globl	Object
+                             90 	.globl	Control
+                             91 	.globl	Panel
+                             92 
+                             93 ; ----------------------------------------------------------------
+                             94 ; - Methods References/Class Reflection Data
+                             95 ; ----------------------------------------------------------------
+                             96 	.globl	Object.pParentClass
+                             97 	.globl	Object.pSProperties
+                             98 	.globl	Object.pSMethods
+                             99 	.globl	Object.ObjectSize
+                            100 	.globl	Object.Constructor
+                            101 	.globl	Object.Destructor
+                            102 
+                            103 	.globl	Control.pParentClass
+                            104 	.globl	Control.pSProperties
+                            105 	.globl	Control.pSMethods
+                            106 	.globl	Control.ObjectSize
+                            107 	.globl	Control.Constructor
+                            108 	.globl	Control.Destructor
+                            109 	.globl	Control.Paint
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 13.
+Hexadecimal [16-Bits]
+
+
+
+                            110 
+                            111 	.globl	Panel.pParentClass
+                            112 	.globl	Panel.pSProperties
+                            113 	.globl	Panel.pSMethods
+                            114 	.globl	Panel.ObjectSize
+                            115 	.globl	Panel.Constructor
+                            116 	.globl	Panel.Destructor
+                            117 	.globl	Panel.Paint
+                            118 
+                            119 
+                            120 ; ----------------------------------------------------------------
+                            121 ; - Static Properties
+                            122 ; ----------------------------------------------------------------
+                            123 
+                            124 
+                            125 
+                            126 
+                            127 
+                            128 
+                            129 
+                            130 ; ----------------------------------------------------------------
+                            131 ; - Static Methods References
+                            132 ; ----------------------------------------------------------------
+                            133 
+                            134 
+                            135 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 14.
+Hexadecimal [16-Bits]
+
+
+
+                              4 
+                              5 	.area _DATA
+                              6 
+   0000                       7 	Zoo.DefObj Panel,panel1
+   0000                       1 panel1:
+   0000 00 00                 2 	.dw		#Panel								; pressuposes pParentClass.offset = 0
+   0002                       3 	.blkb	#Panel._Size - 2
+                              8 
+                              9 	.area _CODE
+                             10 
+   0000                      11 _zootest_testPanel::
+                             12 ; -------------------------------
+                             13 ; INPUTS:
+                             14 ; OUTPUTS:
+                             15 ; -------------------------------
+   0000                      16 	Zoo.InitObjWithClass panel1, Panel
+   0000                       1 	Zoo.SetObjClass panel1, Panel
+   0000                       1 	Zoo.SetObj ^/panel1/
+   0000 FD 21 00 00   [14]    1 	ld IY, #panel1
+   0004                       2 	Zoo.SetClass ^/Panel/
+   0004 FD 36 00 00   [19]    1 	ld 0(IY), #<Panel							; pressuposes pParentClass.offset = 0
+   0008 FD 36 01 00   [19]    2 	ld 1(IY), #>Panel							; pressuposes pParentClass.offset = 0
+   000C                       2 	Zoo.Init
+   000C                       1 	Zoo.CallMeth Object.Constructor
+   000C                       1 	Zoo.GetClass H, L
+   000C FD 6E 00      [19]    1 	ld L, 0(IY)								; pressuposes pParentClass.offset = 0
+   000F FD 66 01      [19]    2 	ld H, 1(IY)								; pressuposes pParentClass.offset = 0
+   0012                       2 	Zoo.CallMethClassInHL Object.Constructor
+   0012 01 07 00      [10]    1 	ld bc, #Object.Constructor.offset
+   0015 09            [11]    2 	add hl, bc
+   0016 CD 00 00      [17]    3 	call _zoo_call_hl
+   0019 FD 36 02 03   [19]   17 	ld Panel.Flags.offset(IY),#3
+   001D FD 36 03 0A   [19]   18 	ld Panel.X.offset(IY),#10
+   0021 FD 36 05 14   [19]   19 	ld Panel.Y.offset(IY),#20	
+   0025 FD 36 07 1E   [19]   20 	ld Panel.Width.offset(IY),#30
+   0029 FD 36 09 28   [19]   21 	ld Panel.Height.offset(IY),#40
+   002D FD 36 0B 0A   [19]   22 	ld Panel.Color.offset(IY),#10
+   0031 FD 36 0C 00   [19]   23 	ld Panel.Direction.offset(IY),#0
+   0035                      24 	Zoo.CallMeth Panel.Paint
+   0035                       1 	Zoo.GetClass H, L
+   0035 FD 6E 00      [19]    1 	ld L, 0(IY)								; pressuposes pParentClass.offset = 0
+   0038 FD 66 01      [19]    2 	ld H, 1(IY)								; pressuposes pParentClass.offset = 0
+   003B                       2 	Zoo.CallMethClassInHL Panel.Paint
+   003B 01 00 00      [10]    1 	ld bc, #Panel.Paint.offset
+   003E 09            [11]    2 	add hl, bc
+   003F CD 00 00      [17]    3 	call _zoo_call_hl
+   0042 C9            [10]   25 	ret
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 15.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.=  2710 L   |     .__.ABS.=  0000 G   |     .__.CPU.=  0000 L
+    .__.H$L.=  0000 L   |     Control    **** GX  |     Control.   **** GX
+    Control.=  0007     |     Control.   **** GX  |     Control.=  0009 
+    Control.=  0002     |     Control.=  0009     |     Control.   **** GX
+    Control.=  0006     |     Control.   **** GX  |     Control.=  000B 
+    Control.=  0007     |     Control.=  0003     |     Control.=  0005 
+    Control.=  000B     |     Control.=  0000     |     Control.   **** GX
+    Control.=  0000     |     Control.   **** GX  |     Control.=  0004 
+    Control.   **** GX  |     Control.=  0002     |     Object     **** GX
+    Object.C   **** GX  |     Object.C=  0007     |     Object.D   **** GX
+    Object.D=  0009     |     Object.O   **** GX  |     Object.O=  0006 
+    Object._=  0002     |     Object.p=  0000     |     Object.p   **** GX
+    Object.p=  0000     |     Object.p   **** GX  |     Object.p=  0004 
+    Object.p   **** GX  |     Object.p=  0002     |     Panel      **** GX
+    Panel.Co=  000B     |     Panel.Co   **** GX  |     Panel.Co=  0007 
+    Panel.De   **** GX  |     Panel.De=  0009     |     Panel.Di=  000C 
+    Panel.Fl=  0002     |     Panel.He=  0009     |     Panel.Ob   **** GX
+    Panel.Ob=  0006     |     Panel.Pa   **** GX  |     Panel.Pa=  0000 
+    Panel.Pa=  000D     |     Panel.Wi=  0007     |     Panel.X.=  0003 
+    Panel.Y.=  0005     |     Panel._S=  000E     |     Panel.pC=  0000 
+    Panel.pP   **** GX  |     Panel.pP=  0000     |     Panel.pS   **** GX
+    Panel.pS=  0004     |     Panel.pS   **** GX  |     Panel.pS=  0002 
+    _zoo_cal   **** GX  |   0 _zootest   0000 GR  |   1 panel1     0000 R
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 16.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE      size   43   flags    0
+   1 _DATA      size    E   flags    0
+
