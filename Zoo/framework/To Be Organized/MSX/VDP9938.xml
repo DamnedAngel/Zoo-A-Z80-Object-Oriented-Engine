@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="VDP9938">
+  <parent>VDP</parent>
+
+  <equ name="COMMAND_STOP"  scope="public">0b00000000</equ>
+  <equ name="COMMAND_POINT" scope="public">0b01000000</equ>
+  <equ name="COMMAND_PSET"  scope="public">0b01010000</equ>
+  <equ name="COMMAND_SRCH"  scope="public">0b01100000</equ>
+  <equ name="COMMAND_LINE"  scope="public">0b01110000</equ>
+  <equ name="COMMAND_LMMV"  scope="public">0b10000000</equ>
+  <equ name="COMMAND_LMMM"  scope="public">0b10010000</equ>
+  <equ name="COMMAND_LMCM"  scope="public">0b10100000</equ>
+  <equ name="COMMAND_LMMC"  scope="public">0b10110000</equ>
+  <equ name="COMMAND_HMMV"  scope="public">0b11000000</equ>
+  <equ name="COMMAND_HMMM"  scope="public">0b11010000</equ>
+  <equ name="COMMAND_YMMM"  scope="public">0b11100000</equ>
+  <equ name="COMMAND_HMMC"  scope="public">0b11110000</equ>
+
+  <equ name="OPERATION_IMP"  scope="public">0b00000000</equ>
+  <equ name="OPERATION_AND"  scope="public">0b00000001</equ>
+  <equ name="OPERATION_OR"   scope="public">0b00000010</equ>
+  <equ name="OPERATION_XOR"  scope="public">0b00000011</equ>
+  <equ name="OPERATION_NOT"  scope="public">0b00000100</equ>
+  <equ name="OPERATION_TIMP" scope="public">0b00001000</equ>
+  <equ name="OPERATION_TAND" scope="public">0b00001001</equ>
+  <equ name="OPERATION_TOR"  scope="public">0b00001010</equ>
+  <equ name="OPERATION_TXOR" scope="public">0b00001011</equ>
+  <equ name="OPERATION_TNOT" scope="public">0b00001100</equ>
+
+  <method name="WaitReady" static="true" final="true" scope="public">
+; --------------------------------
+; INPUTS:
+;	None
+; OUTPUTS:
+;	EI
+;	a = 143
+; --------------------------------
+  ld a,#2
+  di
+  out (#VDP.PORT_1),a				;select s#2
+  ld a,#15+#128
+  out (#VDP.PORT_1),a
+  in a,(#VDP.PORT_1)
+  rra								        ; CE in c flag
+  ld a,#0							      ;back to s#0, enable ints
+  out (#VDP.PORT_1),a
+  ld a,#15+#128
+  ei
+  out (#VDP.PORT_1),a
+  jr c,VDP9938._WaitReady				;loop if vdp not ready (CE)
+  ret
+  </method>
+
+  <method name="HMMV" static="true" final="true" scope="public">
+; -------------------------------
+; INPUTS:
+;	(HL + 00) = X
+;	(HL + 02) = Y
+;	(HL + 04) = Width
+;	(HL + 06) = Height
+;	(HL + 07) = Color
+; CHANGES:
+;	AF, BC, HL
+; DI
+; -------------------------------
+  VDP9938.WaitReady
+  ld a, #36
+  di
+  out (#VDP.PORT_1),a
+  ld a, #17+#128
+  out (#VDP.PORT_1),a
+  ld b, #10
+  ld c, #VDP.PORT_3
+  otir
+  ld a, #VDP9938.COMMAND_HMMV
+  out (#VDP.PORT_3), a				; R#46 (Command = HMMV)
+  ret
+  </method>
+
+
+  <method name="RLineRightOrDown" static="true" final="true" scope="public">
+; --------------------------------
+; INPUTS:
+;	e = DX (Start Position)
+;	d = DY (Start Position)
+;	b = NX (pixels)
+;	h = Color
+;	l = Direction (0: Right, 1: Down)
+; OUTPUTS:
+;	DI
+;	A, C: Changes
+;	HL = HL-1
+; --------------------------------
+  ld c, #VDP.PORT_3
+  VDP9938.WaitReady
+  ld a, #36
+  di
+  out (#VDP.PORT_1), a
+  ld a, #17+#128
+  out (#VDP.PORT_1), a
+  out (c), e						      ; R#36 (DX.LSB = e)
+  xor a
+  out (#VDP.PORT_3), a			  ; R#37 (DX.MSB = 0)
+  out (c), d						      ; R#38 (DY.LSB = d)
+  out (#VDP.PORT_3), a			  ; R#39 (DY.MSB = 0)
+  out (c), b						      ; R#40 (NX.LSB = b)
+  out (#VDP.PORT_3), a			  ; R#41 (NX.MSB = 0)
+  out (#VDP.PORT_3), a			  ; R#42 (NY.LSB = 0)
+  out (#VDP.PORT_3), a			  ; R#43 (NY.MSB = 0)
+  out (c), h				          ; R#44 (Color  = h)
+  out (c), l				          ; R#45 (Video RAM, down, right, right/down)
+  ld a, #VDP9938.COMMAND_LINE
+  out (#VDP.PORT_3), a				; R#46 (Command = LINE)
+  ret
+  </method>
+
+  <method name="prepareCPUVRamTransfer" static="true" final="true" scope="public">
+; --------------------------------
+; This prepares Direct CPU->VRAM Transfers. This is NOT for HMMC of LMMC.
+; This operation is described in V9938 manual under section 1.4.
+; INPUTS:
+;	ADE = VRAM Start Position (17 bit)
+; OUTPUT:
+; CHANGES:
+;	A, D
+; --------------------------------
+  rlc	d
+  rla
+  rlc	d
+  rla
+  srl	d
+  srl	d
+  push af
+  VDP9938.WaitReady
+  pop af
+  ; Step 2: Setting the address counter A16 to A14 (R14)
+  out	(#VDP.PORT_1),a		; A16 to A14
+  ld	a,#14+#128			  ; R14 + Autoincrement
+  out	(#VDP.PORT_1),a		; R14 + Autoincrement
+  ; Step 3: Setting the address counter A7 to A0
+  ld a, e					      ; A7 to A0
+  out	(#VDP.PORT_1),a		; A7 to A0
+  ; Step 4: Setting the address counter A13 to A8 and operation mode
+  ld	a,d					      ; A13 to A8
+  or	#64					      ; Write Mode
+  out	(#VDP.PORT_1),a		; A13 to A8 and write mode
+  ret
+  </method>
+
+  <method name="TransparentCPUVRamTransfer" static="true" final="true" scope="public">
+; --------------------------------
+; Direct CPU->VRAM Transfer (NOT for HMMC of LMMC).
+; This operation is described in V9938 manual under section 1.4.
+; INPUTS:
+;	AD'E' = VRAM Start Position (17 bit)
+; B' = Height
+; B = Width
+; HL = RAM Start Position
+; E = Transparent color
+; OUTPUT:
+; C = VDP.PORT_0
+; CHANGES:
+;	A, D
+; --------------------------------
+  ld D, B
+  exx
+  ld C, A
+VDP9938.TransparentCPUVRamTransfer_LinLoop:
+  push DE
+  ld A, C
+  VDP9938.prepareCPUVRamTransfer
+  exx 
+  ld B, D
+VDP9938.TransparentCPUVRamTransfer_ColLoop:
+  ld A, (HL)
+  inc HL
+  cp E  
+  jr z, VDP9938.TransparentCPUVRamTransfer_Transparent
+  out (#VDP.PORT_0), A
+  djnz VDP9938.TransparentCPUVRamTransfer_ColLoop
+  jr VDP9938.TransparentCPUVRamTransfer_LinEnd
+VDP9938.TransparentCPUVRamTransfer_Transparent:  
+  in A, (#VDP.PORT_0)
+  djnz VDP9938.TransparentCPUVRamTransfer_ColLoop
+VDP9938.TransparentCPUVRamTransfer_LinEnd:
+  exx
+  pop DE
+  inc D
+  djnz VDP9938.TransparentCPUVRamTransfer_LinLoop
+  ret  
+  </method>
+  
+  <method name="CPUVRamTransfer" static="true" final="true" scope="public">
+; --------------------------------
+; Direct CPU->VRAM Transfer (NOT for HMMC of LMMC).
+; This operation is described in V9938 manual under section 1.4.
+; INPUTS:
+;	AD'E' = VRAM Start Position (17 bit)
+; B' = Height
+; B = Width
+; HL = RAM Start Position
+; OUTPUT:
+; C = VDP.PORT_0
+; CHANGES:
+;	A, D
+; --------------------------------
+  ld C, #VDP.PORT_0
+  ld D, B
+  exx
+  ld C, A
+VDP9938.CPUVRamTransfer_Loop:
+  push DE
+  ld A, C
+  VDP9938.prepareCPUVRamTransfer
+  exx 
+  ld B, D
+  otir
+  exx
+  pop DE
+  inc D
+  djnz VDP9938.CPUVRamTransfer_Loop
+  ret
+  </method>
+
+</class>

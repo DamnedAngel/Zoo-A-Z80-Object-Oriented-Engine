@@ -1,3 +1,0 @@
-;[MSX_LIB_PATH]\fusion-c\include\crt0_msxdos.rel
-;[MSX_LIB_PATH]\fusion-c\include\putchar_msxdos.rel
-;[MSX_LIB_PATH]\fusion-c\include\printf.rel

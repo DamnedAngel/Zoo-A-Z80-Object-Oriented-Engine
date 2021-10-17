@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="Console">
+  <include path="../../../msx">msxbios.s</include>
+
+  <method name="Cls" static="true" final="true" scope="public">
+; -------------------------------
+; Clear screen.
+; -------------------------------
+; INPUTS:
+; OUTPUTS:
+; -------------------------------
+    Zoo.CallSlot BIOS_CLS
+    ret
+  </method>
+
+</class>

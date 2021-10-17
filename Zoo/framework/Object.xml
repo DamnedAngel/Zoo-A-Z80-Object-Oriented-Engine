@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="Object">
+  <property name="abc" type="@word" static="true"/>
+  <property name="def" type="@word" scope="public"/>
+  <method name="Constructor" scope="public">
+    ret
+  </method>    
+  <method name="Destructor" scope="public">
+    ret
+  </method>
+</class>

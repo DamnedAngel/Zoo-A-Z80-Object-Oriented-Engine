@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="Rectangle">
+  <parent>Control</parent>
+  <dependency>VDP9938</dependency>
+
+  <!--
+    Flag 0: ActiveFlag, default 1 (defined in Control)
+    Flag 1: VisibleFlag, default 1 (defined in Control)
+    Flags 2-7: may be defined by derived classes, default 0.
+  -->
+
+  <property name="Color" type="@byte" scope="public"/>
+
+  <method name="OnPaint" scope="protected" override="true">
+    ; -------------------------------
+    ; INPUTS:
+    ; OUTPUTS:
+    ;	EI
+    ;	AF, BC, DE, HL: Changes
+    ; -------------------------------
+
+    ; Line command Parameters:
+    ;	e = DX (Start Position)
+    ;	d = DY (Start Position)
+    ;	b = NX (pixels)
+    ;	h = Color
+    ;	l = Direction (0: Right, 1: Down)
+
+    ; Top Line
+    Rectangle.GetXLSB_IY, e
+    GetProp8_IY Rectangle, Y, d
+    GetProp8_IY Rectangle, Width, b
+    dec b
+    GetProp8_IY Rectangle, Color, h
+    ld l, #0
+    VDP9938.RLineRightOrDown
+
+    ; Left Line
+    GetProp8_IY Rectangle, Height, b
+    dec b
+    ld l, #1
+    VDP9938.RLineRightOrDown
+
+    ; Bottom Line
+    ld a, b
+    add a, d
+    ld d, a
+    GetProp8_IY Rectangle, Width, b
+    dec b
+    ld l, #0
+    VDP9938.RLineRightOrDown
+
+    ; Right Line
+    ld a, b
+    add a, e
+    ld e, a
+    GetProp8_IY Rectangle, Y, d
+    GetProp8_IY Rectangle, Height, b
+    dec b
+    ld l, #1
+    jp VDP9938._RLineRightOrDown
+  </method>
+
+</class>

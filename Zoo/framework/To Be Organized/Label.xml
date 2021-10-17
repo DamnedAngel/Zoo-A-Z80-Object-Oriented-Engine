@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="Label">
+  <parent>Control</parent>
+  <dependency>VDP9938</dependency>
+
+  <!--
+    Flag 0: ActiveFlag, default 1 (defined in Control)
+    Flag 1: VisibleFlag, default 1 (defined in Control)
+    Flags 2-7: may be defined by derived classes, default 0.
+  -->
+
+  <!--
+    TransparencyFlag 0: Background
+    TransparencyFlag 1: Foreground
+  -->
+
+  <property name="pString" type="@pointer" scope="public"/>
+  <property name="LineLength" type="@byte" scope="public"/>
+  <property name="Color" type="@byte" scope="public"/>
+  <property name="BGColor" type="@byte" scope="public"/>
+  <property name="TransparencyFlag" type="@byte" scope="public"/>
+  <property name="XPosBKP" type="@byte" scope="private" static="true"/>
+  <property name="RemainingChars" type="@byte" scope="private" static="true"/>
+
+  <method name="Paint" scope="public" override="true">
+    ; -------------------------------
+    ; Changes:
+    ;	AF, BC, HL
+    ; -------------------------------
+    GetPropPtrHL_IY Panel, X
+    jp VDP9938._HMMV
+  </method>
+
+</class>

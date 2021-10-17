@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="Bitmap">
+  <parent>Control</parent>
+  <dependency>VDP9938</dependency>
+
+  <!--
+    Flag 0: ActiveFlag, default 1 (defined in Control)
+    Flag 1: VisibleFlag, default 1 (defined in Control)
+    Flag 2: VRAMBMPFlag, default 0-RAM
+    Flag 3: TransparentFlag, default 0-Non-transparent
+    Flags 4-7: may be defined by derived classes, default 0.
+  -->
+  <equ name="VRAMBMPFlag" scope="public">0b00000100</equ>
+  <equ name="TransparentFlag" scope="public">0b00001000</equ>
+
+  <property name="XBMP" type="@word" scope="public"/>
+  <property name="YBMP" type="@word" scope="public"/>
+  <property name="Direction" type="@byte" scope="public"/>
+  <property name="PaintOperation" type="@byte" scope="public"/>
+  <property name="TransparentColor" type="@byte" scope="public"/>
+
+  <method name="OnPaint" scope="protected" override="true">
+; -------------------------------
+; Changes:
+;	AF, BC, DE, HL
+; -------------------------------
+  Bitmap.GetFlags_IY A
+  and #Bitmap.VRAMBMPFlag
+  jr nz, Bitmap._PaintFromVRAM
+  ;jp Bitmap._PaintFromRAM
+  </method>
+
+  <method name="PaintFromRAM">
+; Paints from RAM(XBMP)
+  Bitmap.GetXLSB_IY E
+  Bitmap.GetYLSB_IY D
+  Bitmap.GetHeightLSB_IY B
+  exx
+  xor A
+  Bitmap.GetWidthLSB_IY B
+  Bitmap.GetXBMP_IY H, L
+  bit 3, Bitmap.Flags.offset(IY)
+  jp z, VDP9938._CPUVRamTransfer
+  Bitmap.GetTransparentColor_IY E
+  jp VDP9938._TransparentCPUVRamTransfer
+  </method>
+
+  <method name="PaintFromVRAM">
+; Paints from VRAM(XBMP, YBMP)
+  Bitmap.GetXPtrHL_IY
+  Bitmap.GetXBMP_IY d, e
+  Bitmap.GetYBMP_IY b, c
+; jp _vdp_HMMM
+  </method>
+
+</class>
+

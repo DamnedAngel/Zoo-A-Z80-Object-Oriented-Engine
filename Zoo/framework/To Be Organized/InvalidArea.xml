@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="InvalidArea">
+  <parent>Bitmap</parent>
+
+  <!--
+    Flag 0: ActiveFlag, default 1 (defined in Control)
+    Flag 1: VisibleFlag, default 1 (defined in Control)
+    Flag 2: VRAMBMPFlag, default 0-RAM
+    Flag 3: TransparentFlag, default 0-Non-transparent
+    Flags 4-7: may be defined by derived classes, default 0.
+  -->
+  
+  <property name="Control" type="@pointer" static="true" count="16"/>
+  <property name="NextControlForPixel" type="@pointer" static="true"/>
+  <property name="NextScrMgrControl" type="@pointer" static="true"/>
+
+  <method name="AddOverlappingControl" scope="public">
+    ; -------------------------------
+    ; INPUT:
+    ;	  B = InvalidArea.X
+    ;	  C = InvalidArea.Width
+    ;	  D = InvalidArea.Y
+    ;	  E = InvalidArea.Height
+    ; -------------------------------
+    InvalidArea.GetNextScrMgrControl H, L
+    push IY
+    jr InvalidArea.GetLastTestedControl_Test
+
+InvalidArea.GetLastTestedControl_NextTest:
+    inc HL
+    inc HL
+
+InvalidArea.GetLastTestedControl_Test:
+    ld A,(HL)
+    ld IYl, A
+    inc hl
+    ld A,(HL)
+    ld IYh, A
+    or IYl
+    jr z, InvalidArea.GetLastTestedControl_EmptyEnd
+
+    ; test control to the right of invalid area
+    ld A, B
+    add C                                           ; X + Width (invalid area)
+    cp Control.X.offset(IY)
+    jr c, InvalidArea.GetLastTestedControl_NextTest
+
+    ; test control to the left of invalid area
+    ld A, Control.X.offset(IY)
+    adc A, Control.Width.offset(IY)                 ; X + Width (control)
+    jr nc, InvalidArea.GetLastTestedControl_TestWidth
+    ld A, #ff
+
+InvalidArea.GetLastTestedControl_TestWidth:
+    cp B
+    jr c, InvalidArea.GetLastTestedControl_NextTest
+
+    ; test control below invalid area
+    ld A, D
+    add E                                           ; Y + Height (invalid area)
+    cp Control.Y.offset(IY)
+    jr c, InvalidArea.GetLastTestedControl_NextTest
+
+    ; test control above invalid area
+    ld A, Control.Y.offset(IY)
+    adc A, Control.Height.offset(IY)                 ; X + Width (control)
+    jr nc, InvalidArea.GetLastTestedControl_TestHeight
+    ld A, #NumRows-1
+
+InvalidArea.GetLastTestedControl_TestHeight:
+    cp D
+    jr c, InvalidArea.GetLastTestedControl_NextTest
+
+    InvalidArea.SetNextScrMgrControl H, L
+    InvalidArea.GetNextControlForPixel H, L
+    inc HL
+    inc HL
+    InvalidArea.SetNextControlForPixel H, L
+
+InvalidArea.GetLastTestedControl_EmptyEnd:
+    InvalidArea.SetNextScrMgrControl H, L
+    xor A
+InvalidArea.GetLastTestedControl_End:
+    pop IY
+    ret
+  </method>
+
+  <method name="BuildBMPRAM" scope="public">
+    ; -------------------------------
+    ; INPUT:
+    ;	  HL =  ScreenManager.pControlList
+    ; -------------------------------
+    InvalidArea.SetNextScrMgrControl HL
+    InvalidArea.SetLastTestedControl HL
+
+    Loop Y
+      Loop X
+        Set BGDepth (X, Y)
+        SetFirstControl
+        JP SearchColor
+
+NextBitmap:
+        GetNextControl
+
+SearchColor:
+        If NoControl
+          JP BgColor
+
+        If BGDepth > Control.Depth
+BGColor:
+          GetBGPixelColor (X, Y)            ; Cannot be transparent
+          JP PaintPixel
+
+        Get ControlPixelColor (X, Y)
+        If D = TransparentColorFlag
+          JP NextControl  
+            
+PaintPixel:
+        Set PixelColor = E
+      EndLoop X
+    EndLoopY
+
+  </method>
+</class>

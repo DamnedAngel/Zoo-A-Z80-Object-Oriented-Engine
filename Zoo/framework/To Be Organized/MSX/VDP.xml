@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<class name="VDP">
+  <include path="../../../msx">msxbios.s</include>
+
+  <equ name="PORT_0" scope="public">0x98</equ>
+  <equ name="PORT_1" scope="public">0x99</equ>
+  <equ name="PORT_2" scope="public">0x9A</equ>
+  <equ name="PORT_3" scope="public">0x9B</equ>
+  
+  <method name="SColor" static="true" final="true" scope="public">
+; -------------------------------
+; Sets screen colors from parameters in Stack.
+; -------------------------------
+; INPUTS:
+;	SP + 02 = foregroung color
+;	SP + 03 = background color
+;	SP + 04 = border color
+; OUTPUTS:
+;	AF, BC, DE, HL: Changes
+; -------------------------------
+    ld hl, #2
+    add hl, sp
+    ld de, #BIOS_FORCLR
+    ld bc, #3
+    ldir
+    jp VDP._BColor
+  </method>
+
+  <method name="RColor" static="true" final="true" scope="public">
+; -------------------------------
+; Sets screen colors from parameters in Registers.
+; -------------------------------
+; INPUTS:
+;	A = foregroung color
+;	H = border color
+;	L = background color
+; OUTPUTS:
+;	AF, BC, DE, HL: Changes
+; -------------------------------
+    ld	(#BIOS_FORCLR), a
+    ld	(#BIOS_BAKCLR), hl
+    jp VDP._BColor
+  </method>
+
+  <method name="BColor" static="true" final="true" scope="public">
+; -------------------------------
+; Sets screen colors from parameters in BIOS Vars.
+; -------------------------------
+; INPUTS:
+;	(BIOS_FORCLR) = foregroung color
+;	(BIOS_BAKCLR) = background color
+;	(BIOS_BDRCLR) = border color
+; OUTPUTS:
+;	AF, BC, DE, HL: Changes
+; -------------------------------
+    Zoo.CallSlot BIOS_CHGCLR
+    ret
+  </method>
+  
+  <method name="SScreen" static="true" scope="public">
+; -------------------------------
+; Changes screen mode from parameters in Stack.
+; -------------------------------
+; INPUTS:
+;	SP + 02 = screen mode
+; OUTPUTS:
+;	AF, BC, DE, HL: Changes
+; -------------------------------
+	  ld hl, #2
+	  add hl, sp
+	  ld a, (hl)
+    jp VDP._RScreen
+  </method>
+
+  <method name="RScreen" static="true" scope="public">
+; -------------------------------
+; Changes screen mode from parameters in Registers.
+; Set page 0 for graphical modes.
+; -------------------------------
+; INPUTS:
+;	a = screen mode
+; OUTPUTS:
+;	AF, BC, DE, HL: Changes
+; -------------------------------
+    push af
+    Zoo.CallSlot BIOS_CHGMOD
+    pop af
+    cp #4					        ; if text modes
+    ret c					        ;	ret
+    ld a,#0x1F				    ;	set page 0 for graphical modes
+    out (#VDP.PORT_1),a
+    ld a,#0x82
+    out (#VDP.PORT_1),a
+    ret
+  </method>
+ 
+</class>
