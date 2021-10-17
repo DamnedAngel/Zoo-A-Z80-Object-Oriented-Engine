@@ -1,17 +1,87 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="engine">
+      <UniqueIdentifier>{e0092d30-f157-4749-98ed-663050406ae2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="framework">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="engine\zoo.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.methodaccessorsforobjects.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.methods.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.pointers.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.properties.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.propertiespointers.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.propertyaccessorsforclasses.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.propertyaccessorsforobjects.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.reflection.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.macros.staticproperties.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r0_none.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r0_none.s">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r1_inheritance.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r1_inheritance.s">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r2_namedinheritance.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r2_namedinheritance.s">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r3_classstructure.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r3_classstructure.s">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r4_namedmembers.asm">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.reflection.r4_namedmembers.s">
+      <Filter>engine</Filter>
+    </None>
+    <None Include="engine\zoo.s">
+      <Filter>engine</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="framework\Object.xml">
+      <Filter>framework</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="framework\zoo.class.xsd">
+      <Filter>framework</Filter>
+    </Xsd>
   </ItemGroup>
 </Project>

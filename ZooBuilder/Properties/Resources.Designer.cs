@@ -19,7 +19,7 @@ namespace ZooBuilder.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -62,11 +62,12 @@ namespace ZooBuilder.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Generating Z80 OO library for: {0}
-        ///Verbose: {1}
-        ///Wait for key press: {2}
-        ///Output File: {3}
-        ///Output Directory: {4}
-        ///Zoo Directory: {5}
+        ///Reflection Level: {1}
+        ///Verbose: {2}
+        ///Wait for key press: {3}
+        ///Output File: {4}
+        ///Output Directory: {5}
+        ///Zoo Directory: {6}
         ///---------------------------------------------------------------------------------------.
         /// </summary>
         internal static string VerboseParams {
@@ -142,19 +143,14 @@ namespace ZooBuilder.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to ; ----------------------------------------------------------------
-        ///; - EQUs
+        ///; - Zoo Engine
         ///; ----------------------------------------------------------------
-        ///{{~ for class in classes ~}}
-        ///	{{~ for equ in class.equs ~}}
-        ///		{{~ if equ.value.is_public }}
-        ///			{{~ class.name}}.{{equ.value.name}}		.equ {{equ.value.value}}
-        ///		{{~ end ~}}
-        ///	{{~ end ~}}
-        ///{{~ end ~}}
-        ///
-        ///; ----------------------------------------------------------------
-        ///; - Non-Static Properties Offsets/Object Reflection Data
-        ///; --------------------------------- [rest of string was truncated]&quot;;.
+        ///	.include &quot;{{zoo.engine_path}}/zoo.{{zoo.reflection_level_name}}.asm&quot;
+        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforclasses.asm&quot;
+        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforobjects.asm&quot;
+        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.methodaccessorsforobjects.asm&quot;
+        ///	
+        ///; ---------------------------------------------------------- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_package_asm {
             get {
@@ -163,17 +159,21 @@ namespace ZooBuilder.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ; ----------------------------------------------------------------
-        ///; - Zoo Engine
-        ///; ----------------------------------------------------------------
-        ///	.include &quot;{{zoo.engine_path}}/zoo.{{zoo.reflection_level_name}}.asm&quot;
+        ///   Looks up a localized string similar to 
+        ///	.include &quot;{{zoo.output_path}}/{{zoo.output_file}}.asm&quot;
         ///
         ///; ----------------------------------------------------------------
         ///; - Dependencies
         ///; ----------------------------------------------------------------
         ///{{~ for class in classes ~}}
         ///	{{~ for zinclude in class.zincludes ~}}
-        ///		{{~}}	.include &quot;{{zinclude.value.uri}}&quot;	; referenced in Cla [rest of string was truncated]&quot;;.
+        ///		{{~}}	.include &quot;{{zinclude.value.uri}}&quot;	; referenced in Class {{class.name}}
+        ///	{{~ end ~}}
+        ///{{~ end ~}}
+        ///
+        ///; ----------------------------------------------------------------
+        ///; - EQUs
+        ///; ------------------------------------ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_package_s {
             get {

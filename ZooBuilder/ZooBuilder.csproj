@@ -88,18 +88,6 @@
     <None Include="App.config" />
     <None Include="deploy.bat" />
     <None Include="packages.config" />
-    <None Include="Resources\zoo.class.xsd">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\VerboseParams.txt" />
-    <Content Include="zoo.class.asm.txt" />
-    <Content Include="zoo.class.s.txt" />
-    <Content Include="zoo.class_inheritance.asm.txt" />
-    <Content Include="zoo.package.asm.txt" />
-    <Content Include="zoo.package.s.txt" />
-    <Content Include="ZooBuilder.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -119,6 +107,27 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Strings\VerboseParams.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Strings\ZooBuilder.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\zoo.class.asm.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\zoo.class.s.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\zoo.class_inheritance.asm.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\zoo.package.asm.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\zoo.package.s.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
