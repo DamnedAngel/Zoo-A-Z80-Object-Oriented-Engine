@@ -1,30 +1,486 @@
-﻿	.include "{{zoo.path}}/zoo.asm"
-{{if zoo_class.parent_class}}	.include "{{zoo_class.parent_class.path}}/{{zoo_class.parent_class.name}}_inheritance.asm"
-{{end}}{{
-for dependency in zoo_class.dependencies}}	.include "{{dependency.path}}/{{dependency.name}}.asm"
-{{end}}{{
-for zinclude in zoo_class.zincludes}}	.include "{{zinclude.path}}/{{zinclude.file_name}}"
-{{end}}
-	; {{zoo_class.name}}.EQUs
-{{for equ in zoo_class.equs}} {{equ.value.name}}		.equ {{equ.value.value}}
-{{end}}
-	; {{zoo_class.name}}.Properties
-{{for property in zoo_class.properties}}{{zoo_class.name}}.{{property.value.name}}.offset:	.equ {{property.value.offset}}	; Size = {{property.value.size}}
-{{end}}
-	.area _DATA
-{{zoo_class.name}}.ClassNameStr::		.strz "{{zoo_class.name}}"
+﻿
+; ----------------------------------------------------------------
+; - Zoo Engine
+; ----------------------------------------------------------------
+	.include "zoo.{{zoo.reflection_level_name}}.asm"
+	.include "zoo.macros.propertyaccessorsforclasses.asm"
+	.include "zoo.macros.propertyaccessorsforobjects.asm"
+	.include "zoo.macros.methodaccessorsforobjects.asm"
 
-{{zoo_class.name}}::
-{{zoo_class.name}}.ClassName::			.dw {{zoo_class.name}}.ClassNameStr
-{{zoo_class.name}}.ParentClass::		.dw {{if zoo_class.parent_class}}{{zoo_class.parent_class.name}}{{else}}#0{{end}}
-{{zoo_class.name}}.SisterClass::		.dw #0
-{{zoo_class.name}}.ChildChain::			.dw #0
-{{zoo_class.name}}.ObjectSize::			.dw {{zoo_class.object_size}}
-{{zoo_class.name}}.Methods::
-{{for method in zoo_class.methods}}{{zoo_class.name}}.{{method.value.name}}::	.dw {{if method.value.is_abstract}}#0{{else}}_{{method.value.base_class.name}}.{{method.value.name}}
-{{end}}{{end}}
-	.area _CODE
-{{for method in zoo_class.methods}}{{if !method.value.is_abstract}}_{{zoo_class.name}}.{{method.value.name}}::
-{{method.value.body}}
-{{end}}
-{{end}}
+; ----------------------------------------------------------------
+; - Dependencies
+; ----------------------------------------------------------------
+{{~ for zinclude in zoo_class.z_includes ~}}
+	{{~}}	.include "{{zinclude.value.uri}}"	; referenced in class {{zoo_class.name}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - EQUs
+; ----------------------------------------------------------------
+{{~ for equ in zoo_class.equs ~}}
+	{{~ zoo_class.name}}.{{equ.value.name}}		.equ {{equ.value.value}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Object Size
+; ----------------------------------------------------------------
+{{~ zoo_class.name}}._Size	.equ {{zoo_class.object_size}}
+
+; ----------------------------------------------------------------
+; - Offsets
+; ----------------------------------------------------------------
+; .........................................................
+; Properties Offsets/Object Reflection Data
+; .........................................................
+{{~ for property in zoo_class.extended_properties reversed ~}}
+	{{~ zoo_class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+{{~ end ~}}
+{{~ for property in zoo_class.object_reflection_data ~}}
+	{{~ zoo_class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+{{~ end ~}}
+{{~ for property in zoo_class.properties ~}}
+	{{~ zoo_class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+{{~ end }}
+
+; .........................................................
+; Methods Offsets/zoo_class Reflection Data
+; .........................................................
+{{~ for property in zoo_class.class_reflection_data ~}}
+	{{~ zoo_class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}
+{{~ end ~}}
+{{~ for method in zoo_class.methods ~}}
+	{{~ zoo_class.name}}._{{method.value.name}}.offset	.equ {{method.value.offset}}
+{{~ end ~}}
+{{~ for method in zoo_class.extended_methods ~}}
+	{{~ zoo_class.name}}._{{method.value.name}}.offset	.equ {{method.value.offset}}
+{{~ end ~}}
+
+; .........................................................
+; Static Properties Offsets
+; .........................................................
+{{~ for property in zoo_class.sproperties ~}}
+	{{~ zoo_class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+{{~ end }}
+{{~ for property in zoo_class.extended_sproperties ~}}
+	{{~ zoo_class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+{{~ end ~}}
+
+; .........................................................
+; Static Methods Offsets
+; .........................................................
+{{~ for method in zoo_class.smethods ~}}
+	{{~ zoo_class.name}}._{{method.value.name}}.offset	.equ {{method.value.offset}}
+{{~ end ~}}
+{{~ for method in zoo_class.extended_smethods ~}}
+	{{~ zoo_class.name}}._{{method.value.name}}.offset	.equ {{method.value.offset}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Helper Macros symbols
+; ----------------------------------------------------------------
+
+; .........................................................
+; Methods Calls
+; .........................................................
+{{~ for method in zoo_class.methods ~}}
+.macro	{{zoo_class.name}}.{{method.value.name}}_IY
+Zoo.CallMethod_IY {{zoo_class.name}}, {{method.value.name}}
+.endm
+{{~ end ~}}
+{{~ for method in zoo_class.extended_methods }}
+.macro	{{zoo_class.name}}.{{method.value.name}}_IY
+Zoo.CallMethod_IY {{zoo_class.name}}, {{method.value.name}}
+.endm
+{{~ end ~}}
+
+; .........................................................
+; Static Methods Calls
+; .........................................................
+{{~ for method in zoo_class.smethods ~}}
+	{{~ if method.value.is_public ~}}
+.macro	{{zoo_class.name}}.{{method.value.name}}
+call {{zoo_class.name}}._{{method.value.name}}
+.endm
+	{{~ end ~}}
+{{~ end ~}}
+{{~ for method in zoo_class.extended_smethods ~}}
+	{{~ if method.value.is_public ~}}
+.macro	{{zoo_class.name}}.{{method.value.name}}
+call {{zoo_class.name}}._{{method.value.name}}
+.endm
+	{{~ end ~}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Class Property Accessors
+; ----------------------------------------------------------------
+{{~ for property in zoo_class.object_reflection_data ~}}
+{{~ end ~}}
+{{~ for property in zoo_class.properties ~}}
+; ----------------------------------------------------------------
+; - {{zoo_class.name}}.{{property.value.name}}
+; ----------------------------------------------------------------
+	{{~ if property.value.is_byte ~}}
+Property8BitsAccessorsForClasses {{zoo_class.name}}, {{property.value.name}}
+	{{~ else ~}}
+Property16BitsAccessorsForClasses {{zoo_class.name}}, {{property.value.name}}
+	{{~ end ~}}
+PropertyPointersAccessorsForClasses {{zoo_class.name}}, {{property.value.name}}
+{{~ end ~}}
+{{~ for property in zoo_class.extended_properties ~}}
+; ----------------------------------------------------------------
+; - {{zoo_class.name}}.{{property.value.name}}
+; ----------------------------------------------------------------
+	{{~ if property.value.is_byte ~}}
+Property8BitsAccessorsForClasses {{zoo_class.name}}, {{property.value.name}}
+	{{~ else ~}}
+Property16BitsAccessorsForClasses {{zoo_class.name}}, {{property.value.name}}
+	{{~ end ~}}
+PropertyPointersAccessorsForClasses {{zoo_class.name}}, {{property.value.name}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - {{zoo_class.name}} Object direct accessor
+; ----------------------------------------------------------------
+
+; ----------------------------------------------------------------
+; - Accessors
+; ----------------------------------------------------------------
+
+.macro {{zoo_class.name}}._ObjectAccessors object
+{{~ for property in zoo_class.properties ~}}
+	{{~ if property.value.is_byte ~}}
+Property8BitsAccessorsForObjects {{zoo_class.name}}, object, {{property.value.name}}
+	{{~ else ~}}
+Property16BitsAccessorsForObjects {{zoo_class.name}}, object, {{property.value.name}}
+	{{~ end ~}}
+{{~ end ~}}
+
+{{~ for property in zoo_class.extended_properties ~}}
+	{{~ if property.value.is_byte ~}}
+Property8BitsAccessorsForObjects {{zoo_class.name}}, object, {{property.value.name}}
+	{{~ else ~}}
+Property16BitsAccessorsForObjects {{zoo_class.name}}, object, {{property.value.name}}
+	{{~ end ~}}
+{{~ end ~}}
+
+.macro object'._SetIY
+Zoo.SetObj object
+.endm
+
+{{~ for method in zoo_class.methods ~}}
+MethodAccessorsForObjects {{zoo_class.name}}, object, {{method.value.name}} 
+{{~ end ~}}
+{{~ for method in zoo_class.extended_methods ~}}
+MethodAccessorsForObjects {{zoo_class.name}}, object, {{method.value.name}} 
+{{~ end ~}}
+
+.endm
+
+; ----------------------------------------------------------------
+; - Create
+; ----------------------------------------------------------------
+
+.macro {{zoo_class.name}}._Create object
+{{zoo_class.name}}._ObjectAccessors object
+
+.area _DATA
+
+{{~ if zoo.named_inheritance ~}}
+object'.Name::		strz "object"
+{{~ end ~}}
+object'._Start::
+{{~ for property in zoo_class.extended_properties ~}}
+object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+{{~ end ~}}
+
+object'::
+{{~ for property in zoo_class.object_reflection_data ~}}
+object'.{{property.value.name}}::	{{property.value.value}}	; Size = {{property.value.total_size}}
+{{~ end ~}}
+
+{{~ for property in zoo_class.properties ~}}
+object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+{{~ end ~}}
+
+.area _CODE
+
+.endm
+
+; ----------------------------------------------------------------
+; - Construct
+; ----------------------------------------------------------------
+
+{{~ if zoo_class.has_public_properties ~}}
+.macro {{zoo_class.name}}._Construct object, {{zoo_class.public_property_list}}
+{{~ else ~}}
+.macro {{zoo_class.name}}._Construct object
+{{~ end ~}}
+
+{{zoo_class.name}}._ObjectAccessors object
+
+.area _DATA
+
+{{~ if zoo.named_inheritance ~}}
+object'.Name::		strz "object"
+{{~ end ~}}
+object'._Start::
+{{~ for property in zoo_class.extended_properties ~}}
+	{{~ if property.value.is_public ~}}
+		{{~ if property.value.is_byte ~}}
+object'.{{property.value.name}}::	.db {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+		{{~ else ~}}
+object'.{{property.value.name}}::	.dw {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+		{{~ end ~}}
+	{{~ else ~}}
+object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+	{{~ end ~}}
+{{~ end ~}}
+
+object'::
+{{~ for property in zoo_class.object_reflection_data ~}}
+	{{~ if property.value.is_public ~}}
+object'.{{property.value.name}}::	{{property.value.value}}	; Size = {{property.value.total_size}}
+	{{~ end ~}}
+{{~ end ~}}
+
+{{~ for property in zoo_class.properties ~}}
+	{{~ if property.value.is_public ~}}
+		{{~ if property.value.is_byte ~}}
+object'.{{property.value.name}}::	.db {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+		{{~ else ~}}
+object'.{{property.value.name}}::	.dw {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+		{{~ end ~}}
+	{{~ else ~}}
+object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+	{{~ end ~}}
+{{~ end ~}}
+
+.area _CODE
+
+object'.Constructor
+	
+.endm
+
+
+
+	.area _DATA
+
+{{~ if zoo.inheritance_reflection ~}}
+	{{~}}; ----------------------------------------------------------------
+	{{~}}; - Class Reflection Data/Method References
+	{{~}}; ----------------------------------------------------------------
+	{{~ zoo_class.name}}._Start::
+	{{~ for method in zoo_class.extended_methods reversed ~}}
+		{{~ zoo_class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}
+	{{~ end ~}}
+	{{~ zoo_class.name}}::
+	{{~ for property in zoo_class.class_reflection_data ~}}
+		{{~ zoo_class.name}}.{{property.value.name}}::	{{property.value.value}}
+	{{~ end ~}}
+	{{~ for method in zoo_class.methods ~}}
+		{{~ zoo_class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}
+	{{~ end ~}}
+	{{~ zoo_class.name}}._End::
+
+	{{~}}; ----------------------------------------------------------------
+	{{~}}; - Static Properties
+	{{~}}; ----------------------------------------------------------------
+	{{~ for sproperty in zoo_class.extended_sproperties reversed ~}}
+		{{~ zoo_class.name}}.{{sproperty.value.name}}:{{if !sproperty.value.is_private}}:{{end}}	.blkb #{{sproperty.value.total_size}}; {{sproperty.value.count}} instances of size {{sproperty.value.size}}
+	{{~ end ~}}
+	{{~ zoo_class.name}}._SProperties::
+	{{~ for sproperty in zoo_class.sproperties ~}}
+		{{~ zoo_class.name}}.{{sproperty.value.name}}:{{if !sproperty.value.is_private}}:{{end}}	.blkb #{{sproperty.value.total_size}}; {{sproperty.value.count}} instances of size {{sproperty.value.size}}
+	{{~ end ~}}
+
+	{{~}}; ----------------------------------------------------------------
+	{{~}}; - Static Methods References
+	{{~}}; ----------------------------------------------------------------
+	{{~ for smethod in zoo_class.extended_smethods reversed ~}}
+		{{~ zoo_class.name}}.p{{smethod.value.name}}:{{if !smethod.value.is_private}}:{{end}}	.dw {{if smethod.value.abstract}}#0{{else}}{{smethod.value.base_class.name}}._{{smethod.value.name}}{{end}}
+	{{~ end ~}}
+	{{~ zoo_class.name}}._SMethods::
+	{{~ for smethod in zoo_class.smethods ~}}
+		{{~ zoo_class.name}}.p{{smethod.value.name}}:{{if !smethod.value.is_private}}:{{end}}	.dw {{if smethod.value.abstract}}#0{{else}}{{smethod.value.base_class.name}}._{{smethod.value.name}}{{end}}
+	{{~ end ~}}
+
+	{{~ if zoo.named_inheritance_reflection ~}}
+		{{~}}; ----------------------------------------------------------------
+		{{~}}; - Class Name
+		{{~}}; ----------------------------------------------------------------
+		{{~ zoo_class.name}}.Name::	.strz "{{zoo_class.name}}"
+		{{~ if zoo.named_members_reflection ~}}
+			{{~}}; ----------------------------------------------------------------
+			{{~}}; - Properties Names
+			{{~}}; ----------------------------------------------------------------
+			{{~ for property in zoo_class.extended_properties reversed ~}}
+				{{~ if !property.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{property.value.name}}.Name::	.strz "{{property.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+			{{~ for property in zoo_class.properties ~}}
+				{{~ if !property.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{property.value.name}}.Name::	.strz "{{property.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+
+			{{~}}; ----------------------------------------------------------------
+			{{~}}; - Static Properties Names
+			{{~}}; ----------------------------------------------------------------
+			{{~ for sproperty in zoo_class.extended_sproperties reversed ~}}
+				{{~ if !sproperty.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{sproperty.value.name}}.Name::	.strz "{{sproperty.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+			{{~ for sproperty in zoo_class.sproperties ~}}
+				{{~ if !sproperty.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{sproperty.value.name}}.Name::	.strz "{{sproperty.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+
+			{{~}}; ----------------------------------------------------------------
+			{{~}}; - Method Names
+			{{~}}; ----------------------------------------------------------------
+			{{~ for method in zoo_class.extended_methods reversed ~}}
+				{{~ if !method.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{method.value.name}}.Name::	.strz "{{method.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+			{{~ for method in zoo_class.methods ~}}
+				{{~ if !method.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{method.value.name}}.Name::	.strz "{{method.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+
+			{{~}}; ----------------------------------------------------------------
+			{{~}}; - Static Method Names
+			{{~}}; ----------------------------------------------------------------
+			{{~ for smethod in zoo_class.extended_smethods reversed ~}}
+				{{~ if !smethod.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{smethod.value.name}}.Name::	.strz "{{smethod.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+			{{~ for smethod in zoo_class.smethods ~}}
+				{{~ if !smethod.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{smethod.value.name}}.Name::	.strz "{{smethod.value.name}}"
+				{{~ end ~}}
+			{{~ end ~}}
+
+			{{~}}; ----------------------------------------------------------------
+			{{~}}; - Properties Names Index
+			{{~}}; ----------------------------------------------------------------
+			{{~ for property in zoo_class.extended_properties reversed ~}}
+				{{~ if !property.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{property.value.name}}.pName::	.dw {{zoo_class.name}}.{{property.value.name}}.Name
+				{{~ else ~}}
+					{{~ zoo_class.name}}.{{property.value.name}}.pName::	.dw {{property.value.base_class.name}}.{{property.value.name}}.Name
+				{{~ end ~}}
+			{{~ end ~}}
+			{{~ zoo_class.name}}._PropertiesNames::
+			{{~ for property in zoo_class.properties ~}}
+				{{~ if !property.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{property.value.name}}.pName::	.dw {{zoo_class.name}}.{{property.value.name}}.Name
+				{{~ else ~}}
+					{{~ zoo_class.name}}.{{property.value.name}}.pName::	.dw {{property.value.base_class.name}}.{{property.value.name}}.Name
+				{{~ end ~}}
+			{{~ end ~}}
+
+			{{~}}; ----------------------------------------------------------------
+			{{~}}; - Static Properties Names Index
+			{{~}}; ----------------------------------------------------------------
+			{{~ for sproperty in zoo_class.extended_sproperties reversed ~}}
+				{{~ if !sproperty.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{sproperty.value.name}}.pName::	.dw {{zoo_class.name}}.{{sproperty.value.name}}.Name
+				{{~ else ~}}
+					{{~ zoo_class.name}}.{{sproperty.value.name}}.pName::	.dw {{sproperty.value.base_class.name}}.{{sproperty.value.name}}.Name
+				{{~ end ~}}
+			{{~ end ~}}
+			{{~ zoo_class.name}}._SPropertiesNames::
+			{{~ for sproperty in zoo_class.sproperties ~}}
+				{{~ if !sproperty.value.is_inherited ~}}
+					{{~ zoo_class.name}}.{{sproperty.value.name}}.pName::	.dw {{zoo_class.name}}.{{sproperty.value.name}}.Name
+				{{~ else ~}}
+					{{~ zoo_class.name}}.{{sproperty.value.name}}.pName::	.dw {{sproperty.value.base_class.name}}.{{sproperty.value.name}}.Name
+				{{~ end ~}}
+			{{~ end ~}}
+		{{~ end ~}}
+	{{~ end ~}}
+{{~ end ~}}
+
+.area _CODE
+
+_zoo_call_hl::
+	jp (hl)
+
+_zoo_error::
+	halt
+	jr _zoo_error
+
+{{~}}; ----------------------------------------------------------------
+{{~}}; - {{zoo_class.name}} Methods
+{{~}}; ----------------------------------------------------------------
+{{~ for method in zoo_class.methods ~}}
+	{{~ if zoo.named_members_reflection ~}}
+		{{~ zoo_class.name}}.{{method.value.name}}.pName:	.dw {{zoo_class.name}}.{{method.value.name}}.Name
+	{{~ end ~}}
+	{{~ if !method.value.is_inherited ~}}
+		{{~ zoo_class.name}}._{{method.value.name}}::
+		{{~ if method.value._abstract ~}}
+			{{~}}	jp _zoo_error
+		{{~ else ~}}
+			{{~ method.value.body}}
+		{{~ end ~}}
+	{{~ else ~}}
+		{{~ zoo_class.name}}._{{method.value.name}}		.gblequ {{zoo_class.parent_class.name}}._{{method.value.name}}
+	{{~ end ~}}
+{{~ end ~}}
+{{~ for method in zoo_class.extended_methods ~}}
+	{{~ if zoo.named_members_reflection ~}}
+		{{~ zoo_class.name}}.{{method.value.name}}.pName:	.dw {{zoo_class.name}}.{{method.value.name}}.Name
+	{{~ end ~}}
+	{{~ if !method.value.is_inherited ~}}
+		{{~ zoo_class.name}}._{{method.value.name}}::
+		{{~ if method.value.abstract ~}}
+			{{~}}	jp _zoo_error
+		{{~ else ~}}
+			{{~ method.value.body}}
+		{{~ end ~}}
+	{{~ else ~}}
+		{{~ zoo_class.name}}._{{method.value.name}}		.gblequ {{zoo_class.parent_class.name}}._{{method.value.name}}
+	{{~ end ~}}
+{{~ end ~}}
+
+{{~}}; ----------------------------------------------------------------
+{{~}}; - {{zoo_class.name}} Static Methods
+{{~}}; ----------------------------------------------------------------
+{{~ for smethod in zoo_class.smethods ~}}
+	{{~ if zoo.named_members_reflection ~}}
+		{{~ zoo_class.name}}.{{smethod.value.name}}.pName:	.dw {{zoo_class.name}}.{{smethod.value.name}}.Name
+	{{end}}
+	{{~ if !smethod.value.is_inherited ~}}
+		{{~ zoo_class.name}}._{{smethod.value.name}}::
+		{{~ if smethod.value.abstract ~}}
+			{{~}}	jp _zoo_error
+		{{~ else ~}}
+			{{~ smethod.value.body}}
+		{{~ end ~}}
+	{{~ else ~}}
+		{{~ zoo_class.name}}._{{smethod.value.name}}		.gblequ {{zoo_class.parent_class.name}}._{{smethod.value.name}}
+	{{~ end ~}}
+{{~ end ~}}
+{{~ for smethod in zoo_class.extended_smethods ~}}
+	{{~ if zoo.named_members_reflection ~}}
+		{{~ zoo_class.name}}.{{smethod.value.name}}.pName:	.dw {{zoo_class.name}}.{{smethod.value.name}}.Name
+	{{end}}
+	{{~ if !smethod.value.is_inherited ~}}
+		{{~ zoo_class.name}}._{{smethod.value.name}}::
+		{{~ if smethod.value.abstract ~}}
+			{{~}}	jp _zoo_error
+		{{~ else ~}}
+			{{~ smethod.value.body}}
+		{{~ end ~}}
+	{{~ else ~}}
+		{{~ zoo_class.name}}._{{smethod.value.name}}		.gblequ {{zoo_class.parent_class.name}}._{{smethod.value.name}}
+	{{~ end ~}}
+{{~ end ~}}

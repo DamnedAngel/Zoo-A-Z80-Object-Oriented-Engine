@@ -90,50 +90,23 @@ namespace ZooBuilder.Properties {
         ///.globl {{zoo_class.name}}.SisterClass
         ///.globl {{zoo_class.nam [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string zoo_class_asm {
+        internal static string zoo_class_public_s {
             get {
-                return ResourceManager.GetString("zoo_class_asm", resourceCulture);
+                return ResourceManager.GetString("zoo_class_public_s", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///.globl {{zoo_class.name}}
-        ///.globl {{zoo_class.name}}.ParentClass
-        ///.globl {{zoo_class.name}}.SisterClass
-        ///.globl {{zoo_class.name}}.ClassName
-        ///.globl {{zoo_class.name}}.SizeOfObject
+        ///; ----------------------------------------------------------------
+        ///; - Zoo Engine
+        ///; ----------------------------------------------------------------
+        ///	.include &quot;{{zoo.engine_path}}/zoo.{{zoo.reflection_level_name}}.asm&quot;
+        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforclasses.asm&quot;
+        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforobjects.asm&quot;
+        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.methodaccessorsforobjects.asm&quot;
         ///
-        ///.globl {{zoo_class.name}}.Properties
-        ///{{for property in zoo_class.properties}}
-        ///{{if !property.is_private}}
-        ///{{zoo_class.name}}.{{property.name}}:	.equ {{property.offset}}	; Size = {{property.size}}
-        ///{{end}}
-        ///{{end}}
-        ///
-        ///{{zoo_class.name}}.Methods::
-        ///{{for method in zoo_class.methods}}
-        ///{{if !method.is_private}}
-        ///.globl {{zoo [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string zoo_class_inheritance_asm {
-            get {
-                return ResourceManager.GetString("zoo_class_inheritance_asm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 	.include &quot;{{zoo.path}}/zoo.asm&quot;
-        ///{{if zoo_class.parent_class}}	.include &quot;{{zoo_class.parent_class.path}}/{{zoo_class.parent_class.name}}_inheritance.asm&quot;
-        ///{{end}}{{
-        ///for dependency in zoo_class.dependencies}}	.include &quot;{{dependency.path}}/{{dependency.name}}.asm&quot;
-        ///{{end}}{{
-        ///for zinclude in zoo_class.zincludes}}	.include &quot;{{zinclude.path}}/{{zinclude.file_name}}&quot;
-        ///{{end}}
-        ///	; {{zoo_class.name}}.EQUs
-        ///{{for equ in zoo_class.equs}} {{equ.value.name}}		.equ {{equ.value.value}}
-        ///{{end}}
-        ///	; {{zoo_class.name}}. [rest of string was truncated]&quot;;.
+        ///; --------------------------------------------------------- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_class_s {
             get {
@@ -155,29 +128,6 @@ namespace ZooBuilder.Properties {
         internal static string zoo_package_asm {
             get {
                 return ResourceManager.GetString("zoo_package_asm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///	.include &quot;{{zoo.output_path}}/{{zoo.output_file}}.asm&quot;
-        ///
-        ///; ----------------------------------------------------------------
-        ///; - Dependencies
-        ///; ----------------------------------------------------------------
-        ///{{~ for class in classes ~}}
-        ///	{{~ for zinclude in class.zincludes ~}}
-        ///		{{~}}	.include &quot;{{zinclude.value.uri}}&quot;	; referenced in Class {{class.name}}
-        ///	{{~ end ~}}
-        ///{{~ end ~}}
-        ///
-        ///; ----------------------------------------------------------------
-        ///; - EQUs
-        ///; ------------------------------------ [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string zoo_package_s {
-            get {
-                return ResourceManager.GetString("zoo_package_s", resourceCulture);
             }
         }
         

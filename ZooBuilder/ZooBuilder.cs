@@ -24,7 +24,7 @@ namespace ZooBuilder
             [Option('i', "inputClasses", Required = false, HelpText = "Input class files to be processed.")]
             public IEnumerable<string> InputFiles { get; set; }
 
-            [Option('o', "outputFile", Required = false, Default = "zoo.package", HelpText = "Output Zoo library file.")]
+            [Option('o', "outputFile", Required = false, Default = "", HelpText = "Output Zoo library file.")]
             public string OutputFile { get; set; }
 
             [Option('d', "outputDir", Required = false, Default = ".", HelpText = "Output directory.")]
@@ -116,13 +116,18 @@ namespace ZooBuilder
                     */
                     ICollection<ZooClass> classes = ZooClass.zooClasses.Values;
 
-                    var template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_package_s);
-                    var result = template.Render(new { classes, zoo });
-                    File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".s"), result);
+                    var template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_class_s);
+                    foreach (var zooClass in classes)
+                    {
+                        var result = template.Render(new { zooClass, zoo });
+                        File.WriteAllText(Path.Combine(options.OutputDir, zooClass.Name + ".s"), result);
+                    }
 
                     template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_package_asm);
-                    result = template.Render(new { classes, zoo });
-                    File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".asm"), result);
+                    {
+                        var result = template.Render(new { classes, zoo });
+                        File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".asm"), result);
+                    }
 
                     if (!ZBError.IsError)
                     {

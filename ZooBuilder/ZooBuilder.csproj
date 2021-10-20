@@ -65,13 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Equ.cs" />
-    <Compile Include="ZBFile.cs" />
-    <Compile Include="Method.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ZBFile.cs" />
+    <Compile Include="Method.cs" />
     <Compile Include="Member.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="XMLValidator.cs" />
@@ -88,12 +88,16 @@
     <None Include="App.config" />
     <None Include="deploy.bat" />
     <None Include="packages.config" />
+    <None Include="Resources\Strings\VerboseParams.txt" />
+    <None Include="Resources\Strings\ZooBuilder.txt" />
+    <None Include="Resources\Templates\zoo.class.s.txt" />
+    <None Include="Resources\Templates\zoo.package.asm.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -109,25 +113,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Strings\VerboseParams.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Strings\ZooBuilder.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Templates\zoo.class.asm.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Templates\zoo.class.s.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Templates\zoo.class_inheritance.asm.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Templates\zoo.package.asm.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Templates\zoo.package.s.txt" />
+    <None Include="Resources\Templates\zoo.class.public.s.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
