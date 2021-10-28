@@ -10,6 +10,9 @@
 ; ----------------------------------------------------------------
 ; - Dependencies
 ; ----------------------------------------------------------------
+{{if zoo_class.parent_class}}
+	{{~}}	.include "{{zoo_class.parent_class}}.protected.interface.s"	; parent class
+{{~ end ~}}
 {{~ for zinclude in zoo_class.z_includes ~}}
 	{{~}}	.include "{{zinclude.value.uri}}"	; referenced in class {{zoo_class.name}}
 {{~ end ~}}
@@ -270,6 +273,29 @@ object'.Constructor
 	{{~}}; ----------------------------------------------------------------
 	{{~}}; - Class Reflection Data/Method References
 	{{~}}; ----------------------------------------------------------------
+	{{if zoo_class.parent_class}}
+	.globl 	{{zoo_class.parent_class.name}}
+		{{~ for property in zoo_class.parent_class.class_reflection_data ~}}
+			{{~ if !property.value.is_private ~}}
+	.globl {{zoo_class.parent_class.name}}.{{property.value.name}}
+			{{~ end ~}}
+		{{~ end ~}}
+		{{~ for method in zoo_class.parent_class.methods ~}}
+			{{~ if !method.value.is_private ~}}
+				{{~ if !method.value.abstract ~}}
+	.globl {{method.value.base_class.name}}._{{method.value.name}}
+				{{~ end ~}}
+			{{~ end ~}}
+		{{~ end ~}}
+		{{~ for method in zoo_class.parent_class.extended_methods reversed ~}}
+			{{~ if !method.value.is_private ~}}
+				{{~ if !method.value.abstract ~}}
+	.globl {{method.value.base_class.name}}._{{method.value.name}}
+				{{~ end ~}}
+			{{~ end ~}}
+		{{~ end ~}}
+	{{~ end ~}}
+
 	{{~ zoo_class.name}}._Start::
 	{{~ for method in zoo_class.extended_methods reversed ~}}
 		{{~ zoo_class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}

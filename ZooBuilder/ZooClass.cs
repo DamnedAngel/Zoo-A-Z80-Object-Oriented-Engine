@@ -25,6 +25,7 @@ namespace ZooBuilder
         public string AbsolutePath { get { return ClassFile.AbsolutePath; } }
         public string FileName { get { return ClassFile.FullFileName; } }
         public string URI { get { return ClassFile.URI; } }
+        public bool IsInputFile { get; set; } = false;
 
         public ZooClass ParentClass { get; set; }
         public IDictionary<string, ZBFile> Dependencies { get; set; }
@@ -166,11 +167,11 @@ namespace ZooBuilder
         }
 
 
-        public static ZooClass getZooClass(string fileName, Zoo zoo)
+        public static void NewZooClassFromFile (string fileName, Zoo zoo)
         {
             string currentPath = Path.GetDirectoryName(fileName);
             string className = Path.GetFileNameWithoutExtension(fileName);
-            return getZooClass(className, currentPath, null, zoo, "");
+            getZooClass(className, currentPath, null, zoo, "").IsInputFile = true;
         }
 
         private static ZooClass getZooClass(string name, string classPath, ZBPath referencePath, Zoo zoo, string logPrefix)

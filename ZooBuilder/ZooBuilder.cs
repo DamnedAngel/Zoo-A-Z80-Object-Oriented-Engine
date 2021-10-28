@@ -21,7 +21,7 @@ namespace ZooBuilder
             [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
             public bool Verbose { get; set; }
 
-            [Option('i', "inputClasses", Required = false, HelpText = "Input class files to be processed.")]
+            [Option('i', "inputFile", Required = false, HelpText = "Input class files to be processed.")]
             public IEnumerable<string> InputFiles { get; set; }
 
             [Option('o', "outputFile", Required = false, Default = "", HelpText = "Output Zoo library file.")]
@@ -35,6 +35,12 @@ namespace ZooBuilder
 
             [Option('r', "reflectionLevel", Required = false, Default = "class", HelpText = "Reflection Level (none, inheritance, namedInheritance, classStructure, namedMembers).")]
             public string ReflectionLevel { get; set; }
+
+            [Option('a', "ancestorClasses", Required = false, Default = "", HelpText = "Include ancestor classes in the package.")]
+            public bool AncestorClasses { get; set; }
+
+            [Option('s', "symbolFile", Required = false, Default = "", HelpText = "Additional symbol files to be .included.")]
+            public IEnumerable<string> SymbolFiles { get; set; }
         }
 
         static Zoo zoo = new Zoo();
@@ -78,7 +84,7 @@ namespace ZooBuilder
             zoo.Path = options.ZooDir;
             zoo.OutputPath = options.OutputDir;
             zoo.OutputFile = options.OutputFile;
-            ZBConsole.Debug(Resources.VerboseParams, String.Join(", ", options.InputFiles), options.ReflectionLevel, options.Verbose, options.Wait, options.OutputFile, options.OutputDir, options.ZooDir);
+            ZBConsole.Debug(Resources.VerboseParams, String.Join(", ", options.InputFiles), options.ReflectionLevel, options.Verbose, options.Wait, options.OutputFile, options.OutputDir, options.ZooDir, options.AncestorClasses, String.Join(", ", options.SymbolFiles));
 
             /*
             Console.WriteLine("only change access time:        {0}", IfTrue(TouchOptions.OnlyAccessTime));
@@ -93,7 +99,7 @@ namespace ZooBuilder
 
             foreach (var inputFile in options.InputFiles)
             {
-                ZooClass zooClass = ZooClass.getZooClass(inputFile, zoo);
+                ZooClass.NewZooClassFromFile (inputFile, zoo);
                 if (ZBError.IsError)
                 { break; }
             }
