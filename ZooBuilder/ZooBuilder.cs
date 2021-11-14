@@ -33,13 +33,13 @@ namespace ZooBuilder
             [Option('z', "zooDir", Required = false, Default = ".", HelpText = "Zoo framework directory.")]
             public string ZooDir { get; set; }
 
-            [Option('r', "reflectionLevel", Required = false, Default = "class", HelpText = "Reflection Level (none, inheritance, namedInheritance, classStructure, namedMembers).")]
+            [Option('r', "reflectionLevel", Required = false, Default = "inheritance", HelpText = "Reflection Level (none, inheritance, namedInheritance, classStructure, namedMembers).")]
             public string ReflectionLevel { get; set; }
 
-            [Option('a', "ancestorClasses", Required = false, Default = "", HelpText = "Include ancestor classes in the package.")]
+            [Option('a', "ancestorClasses", Required = false, Default = false, HelpText = "Include ancestor classes in the package.")]
             public bool AncestorClasses { get; set; }
 
-            [Option('s', "symbolFile", Required = false, Default = "", HelpText = "Additional symbol files to be .included.")]
+            [Option('s', "symbolFile", Required = false, HelpText = "Additional symbol files to be .included.")]
             public IEnumerable<string> SymbolFiles { get; set; }
         }
 
