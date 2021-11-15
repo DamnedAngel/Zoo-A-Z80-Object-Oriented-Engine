@@ -1,12 +1,14 @@
 ﻿
-	.include "{{zoo.output_path}}/{{zoo.output_file}}.asm"
+	.include "{{zoo.output_file}}.asm"
 
 ; ----------------------------------------------------------------
 ; - Dependencies
 ; ----------------------------------------------------------------
 {{~ for class in classes ~}}
-	{{~ for zinclude in class.zincludes ~}}
-		{{~}}	.include "{{zinclude.value.uri}}"	; referenced in Class {{class.name}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for zinclude in class.zincludes ~}}
+			{{~}}	.include "{{zinclude.value.uri}}"	; referenced in Class {{class.name}}
+		{{~ end ~}}
 	{{~ end ~}}
 {{~ end ~}}
 
@@ -14,8 +16,10 @@
 ; - EQUs
 ; ----------------------------------------------------------------
 {{~ for class in classes ~}}
-	{{~ for equ in class.equs ~}}
-		{{~ class.name}}.{{equ.value.name}}		.equ {{equ.value.value}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for equ in class.equs ~}}
+			{{~ class.name}}.{{equ.value.name}}		.equ {{equ.value.value}}
+		{{~ end ~}}
 	{{~ end ~}}
 {{~ end ~}}
 
@@ -23,15 +27,17 @@
 ; - Properties Offsets/Object Reflection Data
 ; ----------------------------------------------------------------
 {{~ for class in classes ~}}
-	{{~ for property in class.extended_properties reversed ~}}
-		{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for property in class.extended_properties reversed ~}}
+			{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+		{{~ end ~}}
+		{{~ for property in class.object_reflection_data ~}}
+			{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+		{{~ end ~}}
+		{{~ for property in class.properties ~}}
+			{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
+		{{~ end }}
 	{{~ end ~}}
-	{{~ for property in class.object_reflection_data ~}}
-		{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
-	{{~ end ~}}
-	{{~ for property in class.properties ~}}
-		{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
-	{{~ end }}
 {{~ end ~}}
 
 	.area _DATA
@@ -41,47 +47,53 @@
 	{{~}}; - Class Reflection Data/Method References
 	{{~}}; ----------------------------------------------------------------
 	{{~ for class in classes ~}}
-		{{~ class.name}}._Start::
-		{{~ for method in class.extended_methods reversed ~}}
-			{{~ class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}
-		{{~ end ~}}
-		{{~ class.name}}::
-		{{~ for property in class.class_reflection_data ~}}
-			{{~ class.name}}.{{property.value.name}}::	{{property.value.value}}
-		{{~ end ~}}
-		{{~ for method in class.methods ~}}
-			{{~ class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}
-		{{~ end ~}}
-		{{~ class.name}}._End::
+		{{~ if class.is_input_file || zoo.include_ancestors ~}}
+			{{~ class.name}}._Start::
+			{{~ for method in class.extended_methods reversed ~}}
+				{{~ class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}
+			{{~ end ~}}
+			{{~ class.name}}::
+			{{~ for property in class.class_reflection_data ~}}
+				{{~ class.name}}.{{property.value.name}}::	{{property.value.value}}
+			{{~ end ~}}
+			{{~ for method in class.methods ~}}
+				{{~ class.name}}.p{{method.value.name}}:{{if !method.value.is_private}}:{{end}}	.dw {{if method.value.abstract}}#0{{else}}{{method.value.base_class.name}}._{{method.value.name}}{{end}}
+			{{~ end ~}}
+			{{~ class.name}}._End::
 
+		{{~ end ~}}
 	{{~ end ~}}
 
 	{{~}}; ----------------------------------------------------------------
 	{{~}}; - Static Properties
 	{{~}}; ----------------------------------------------------------------
 	{{~ for class in classes ~}}
-		{{~ for sproperty in class.extended_sproperties reversed ~}}
-			{{~ class.name}}.{{sproperty.value.name}}:{{if !sproperty.value.is_private}}:{{end}}	.blkb #{{sproperty.value.total_size}}; {{sproperty.value.count}} instances of size {{sproperty.value.size}}
-		{{~ end ~}}
-		{{~ class.name}}._SProperties::
-		{{~ for sproperty in class.sproperties ~}}
-			{{~ class.name}}.{{sproperty.value.name}}:{{if !sproperty.value.is_private}}:{{end}}	.blkb #{{sproperty.value.total_size}}; {{sproperty.value.count}} instances of size {{sproperty.value.size}}
-		{{~ end ~}}
+		{{~ if class.is_input_file || zoo.include_ancestors ~}}
+			{{~ for sproperty in class.extended_sproperties reversed ~}}
+				{{~ class.name}}.{{sproperty.value.name}}:{{if !sproperty.value.is_private}}:{{end}}	.blkb #{{sproperty.value.total_size}}; {{sproperty.value.count}} instances of size {{sproperty.value.size}}
+			{{~ end ~}}
+			{{~ class.name}}._SProperties::
+			{{~ for sproperty in class.sproperties ~}}
+				{{~ class.name}}.{{sproperty.value.name}}:{{if !sproperty.value.is_private}}:{{end}}	.blkb #{{sproperty.value.total_size}}; {{sproperty.value.count}} instances of size {{sproperty.value.size}}
+			{{~ end ~}}
 
+		{{~ end ~}}
 	{{~ end ~}}
 
 	{{~}}; ----------------------------------------------------------------
 	{{~}}; - Static Methods References
 	{{~}}; ----------------------------------------------------------------
 	{{~ for class in classes ~}}
-		{{~ for smethod in class.extended_smethods reversed ~}}
-			{{~ class.name}}.p{{smethod.value.name}}:{{if !smethod.value.is_private}}:{{end}}	.dw {{if smethod.value.abstract}}#0{{else}}{{smethod.value.base_class.name}}._{{smethod.value.name}}{{end}}
-		{{~ end ~}}
-		{{~ class.name}}._SMethods::
-		{{~ for smethod in class.smethods ~}}
-			{{~ class.name}}.p{{smethod.value.name}}:{{if !smethod.value.is_private}}:{{end}}	.dw {{if smethod.value.abstract}}#0{{else}}{{smethod.value.base_class.name}}._{{smethod.value.name}}{{end}}
-		{{~ end ~}}
+		{{~ if class.is_input_file || zoo.include_ancestors ~}}
+			{{~ for smethod in class.extended_smethods reversed ~}}
+				{{~ class.name}}.p{{smethod.value.name}}:{{if !smethod.value.is_private}}:{{end}}	.dw {{if smethod.value.abstract}}#0{{else}}{{smethod.value.base_class.name}}._{{smethod.value.name}}{{end}}
+			{{~ end ~}}
+			{{~ class.name}}._SMethods::
+			{{~ for smethod in class.smethods ~}}
+				{{~ class.name}}.p{{smethod.value.name}}:{{if !smethod.value.is_private}}:{{end}}	.dw {{if smethod.value.abstract}}#0{{else}}{{smethod.value.base_class.name}}._{{smethod.value.name}}{{end}}
+			{{~ end ~}}
 
+		{{~ end ~}}
 	{{~ end ~}}
 
 	{{~ if zoo.named_inheritance_reflection ~}}
@@ -89,119 +101,133 @@
 		{{~}}; - Class Names
 		{{~}}; ----------------------------------------------------------------
 		{{~ for class in classes ~}}
-			{{~ class.name}}.Name::	.strz "{{class.name}}"
+			{{~ if class.is_input_file || zoo.include_ancestors ~}}
+				{{~ class.name}}.Name::	.strz "{{class.name}}"
+			{{~ end ~}}
 		{{~ end ~}}
 		{{~ if zoo.named_members_reflection ~}}
 			{{~}}; ----------------------------------------------------------------
 			{{~}}; - Properties Names
 			{{~}}; ----------------------------------------------------------------
 			{{~ for class in classes ~}}
-				{{~ for property in class.extended_properties reversed ~}}
-					{{~ if !property.value.is_inherited ~}}
-						{{~ class.name}}.{{property.value.name}}.Name::	.strz "{{property.value.name}}"
+				{{~ if class.is_input_file || zoo.include_ancestors ~}}
+					{{~ for property in class.extended_properties reversed ~}}
+						{{~ if !property.value.is_inherited ~}}
+							{{~ class.name}}.{{property.value.name}}.Name::	.strz "{{property.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
-				{{~ for property in class.properties ~}}
-					{{~ if !property.value.is_inherited ~}}
-						{{~ class.name}}.{{property.value.name}}.Name::	.strz "{{property.value.name}}"
+					{{~ for property in class.properties ~}}
+						{{~ if !property.value.is_inherited ~}}
+							{{~ class.name}}.{{property.value.name}}.Name::	.strz "{{property.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
 
+				{{~ end ~}}
 			{{~ end ~}}
 
 			{{~}}; ----------------------------------------------------------------
 			{{~}}; - Static Properties Names
 			{{~}}; ----------------------------------------------------------------
 			{{~ for class in classes ~}}
-				{{~ for sproperty in class.extended_sproperties reversed ~}}
-					{{~ if !sproperty.value.is_inherited ~}}
-						{{~ class.name}}.{{sproperty.value.name}}.Name::	.strz "{{sproperty.value.name}}"
+				{{~ if class.is_input_file || zoo.include_ancestors ~}}
+					{{~ for sproperty in class.extended_sproperties reversed ~}}
+						{{~ if !sproperty.value.is_inherited ~}}
+							{{~ class.name}}.{{sproperty.value.name}}.Name::	.strz "{{sproperty.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
-				{{~ for sproperty in class.sproperties ~}}
-					{{~ if !sproperty.value.is_inherited ~}}
-						{{~ class.name}}.{{sproperty.value.name}}.Name::	.strz "{{sproperty.value.name}}"
+					{{~ for sproperty in class.sproperties ~}}
+						{{~ if !sproperty.value.is_inherited ~}}
+							{{~ class.name}}.{{sproperty.value.name}}.Name::	.strz "{{sproperty.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
 
+				{{~ end ~}}
 			{{~ end ~}}
 
 			{{~}}; ----------------------------------------------------------------
 			{{~}}; - Method Names
 			{{~}}; ----------------------------------------------------------------
 			{{~ for class in classes ~}}
-				{{~ for method in class.extended_methods reversed ~}}
-					{{~ if !method.value.is_inherited ~}}
-						{{~ class.name}}.{{method.value.name}}.Name::	.strz "{{method.value.name}}"
+				{{~ if class.is_input_file || zoo.include_ancestors ~}}
+					{{~ for method in class.extended_methods reversed ~}}
+						{{~ if !method.value.is_inherited ~}}
+							{{~ class.name}}.{{method.value.name}}.Name::	.strz "{{method.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
-				{{~ for method in class.methods ~}}
-					{{~ if !method.value.is_inherited ~}}
-						{{~ class.name}}.{{method.value.name}}.Name::	.strz "{{method.value.name}}"
+					{{~ for method in class.methods ~}}
+						{{~ if !method.value.is_inherited ~}}
+							{{~ class.name}}.{{method.value.name}}.Name::	.strz "{{method.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
 
+				{{~ end ~}}
 			{{~ end ~}}
 
 			{{~}}; ----------------------------------------------------------------
 			{{~}}; - Static Method Names
 			{{~}}; ----------------------------------------------------------------
 			{{~ for class in classes ~}}
-				{{~ for smethod in class.extended_smethods reversed ~}}
-					{{~ if !smethod.value.is_inherited ~}}
-						{{~ class.name}}.{{smethod.value.name}}.Name::	.strz "{{smethod.value.name}}"
+				{{~ if class.is_input_file || zoo.include_ancestors ~}}
+					{{~ for smethod in class.extended_smethods reversed ~}}
+						{{~ if !smethod.value.is_inherited ~}}
+							{{~ class.name}}.{{smethod.value.name}}.Name::	.strz "{{smethod.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
-				{{~ for smethod in class.smethods ~}}
-					{{~ if !smethod.value.is_inherited ~}}
-						{{~ class.name}}.{{smethod.value.name}}.Name::	.strz "{{smethod.value.name}}"
+					{{~ for smethod in class.smethods ~}}
+						{{~ if !smethod.value.is_inherited ~}}
+							{{~ class.name}}.{{smethod.value.name}}.Name::	.strz "{{smethod.value.name}}"
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
 
+				{{~ end ~}}
 			{{~ end ~}}
 
 			{{~}}; ----------------------------------------------------------------
 			{{~}}; - Properties Names Index
 			{{~}}; ----------------------------------------------------------------
 			{{~ for class in classes ~}}
-				{{~ for property in class.extended_properties reversed ~}}
-					{{~ if !property.value.is_inherited ~}}
-						{{~ class.name}}.{{property.value.name}}.pName::	.dw {{class.name}}.{{property.value.name}}.Name
-					{{~ else ~}}
-						{{~ class.name}}.{{property.value.name}}.pName::	.dw {{property.value.base_class.name}}.{{property.value.name}}.Name
+				{{~ if class.is_input_file || zoo.include_ancestors ~}}
+					{{~ for property in class.extended_properties reversed ~}}
+						{{~ if !property.value.is_inherited ~}}
+							{{~ class.name}}.{{property.value.name}}.pName::	.dw {{class.name}}.{{property.value.name}}.Name
+						{{~ else ~}}
+							{{~ class.name}}.{{property.value.name}}.pName::	.dw {{property.value.base_class.name}}.{{property.value.name}}.Name
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
-				{{~ class.name}}._PropertiesNames::
-				{{~ for property in class.properties ~}}
-					{{~ if !property.value.is_inherited ~}}
-						{{~ class.name}}.{{property.value.name}}.pName::	.dw {{class.name}}.{{property.value.name}}.Name
-					{{~ else ~}}
-						{{~ class.name}}.{{property.value.name}}.pName::	.dw {{property.value.base_class.name}}.{{property.value.name}}.Name
+					{{~ class.name}}._PropertiesNames::
+					{{~ for property in class.properties ~}}
+						{{~ if !property.value.is_inherited ~}}
+							{{~ class.name}}.{{property.value.name}}.pName::	.dw {{class.name}}.{{property.value.name}}.Name
+						{{~ else ~}}
+							{{~ class.name}}.{{property.value.name}}.pName::	.dw {{property.value.base_class.name}}.{{property.value.name}}.Name
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
 
+				{{~ end ~}}
 			{{~ end ~}}
 
 			{{~}}; ----------------------------------------------------------------
 			{{~}}; - Static Properties Names Index
 			{{~}}; ----------------------------------------------------------------
 			{{~ for class in classes ~}}
-				{{~ for sproperty in class.extended_sproperties reversed ~}}
-					{{~ if !sproperty.value.is_inherited ~}}
-						{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{class.name}}.{{sproperty.value.name}}.Name
-					{{~ else ~}}
-						{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{sproperty.value.base_class.name}}.{{sproperty.value.name}}.Name
+				{{~ if class.is_input_file || zoo.include_ancestors ~}}
+					{{~ for sproperty in class.extended_sproperties reversed ~}}
+						{{~ if !sproperty.value.is_inherited ~}}
+							{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{class.name}}.{{sproperty.value.name}}.Name
+						{{~ else ~}}
+							{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{sproperty.value.base_class.name}}.{{sproperty.value.name}}.Name
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
-				{{~ class.name}}._SPropertiesNames::
-				{{~ for sproperty in class.sproperties ~}}
-					{{~ if !sproperty.value.is_inherited ~}}
-						{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{class.name}}.{{sproperty.value.name}}.Name
-					{{~ else ~}}
-						{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{sproperty.value.base_class.name}}.{{sproperty.value.name}}.Name
+					{{~ class.name}}._SPropertiesNames::
+					{{~ for sproperty in class.sproperties ~}}
+						{{~ if !sproperty.value.is_inherited ~}}
+							{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{class.name}}.{{sproperty.value.name}}.Name
+						{{~ else ~}}
+							{{~ class.name}}.{{sproperty.value.name}}.pName::	.dw {{sproperty.value.base_class.name}}.{{sproperty.value.name}}.Name
+						{{~ end ~}}
 					{{~ end ~}}
-				{{~ end ~}}
 
+				{{~ end ~}}
 			{{~ end ~}}
 		{{~ end ~}}
 	{{~ end ~}}
@@ -216,72 +242,74 @@ _zoo_error::
 	halt
 
 {{~ for class in classes ~}}
-	{{~}}; ----------------------------------------------------------------
-	{{~}}; - {{class.name}} Methods
-	{{~}}; ----------------------------------------------------------------
-	{{~ for method in class.methods ~}}
-		{{~ if zoo.named_members_reflection ~}}
-			{{~ class.name}}.{{method.value.name}}.pName:	.dw {{class.name}}.{{method.value.name}}.Name
-		{{~ end ~}}
-		{{~ if !method.value.is_inherited ~}}
-			{{~ class.name}}._{{method.value.name}}::
-			{{~ if method.value._abstract ~}}
-				{{~}}	jp _zoo_error
-			{{~ else ~}}
-				{{~ method.value.body}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~}}; ----------------------------------------------------------------
+		{{~}}; - {{class.name}} Methods
+		{{~}}; ----------------------------------------------------------------
+		{{~ for method in class.methods ~}}
+			{{~ if zoo.named_members_reflection ~}}
+				{{~ class.name}}.{{method.value.name}}.pName:	.dw {{class.name}}.{{method.value.name}}.Name
 			{{~ end ~}}
-		{{~ else ~}}
-			{{~ class.name}}._{{method.value.name}}		.gblequ {{class.parent_class.name}}._{{method.value.name}}
-		{{~ end ~}}
-	{{~ end ~}}
-	{{~ for method in class.extended_methods ~}}
-		{{~ if zoo.named_members_reflection ~}}
-			{{~ class.name}}.{{method.value.name}}.pName:	.dw {{class.name}}.{{method.value.name}}.Name
-		{{~ end ~}}
-		{{~ if !method.value.is_inherited ~}}
-			{{~ class.name}}._{{method.value.name}}::
-			{{~ if method.value.abstract ~}}
-				{{~}}	jp _zoo_error
+			{{~ if !method.value.is_inherited ~}}
+				{{~ class.name}}._{{method.value.name}}::
+				{{~ if method.value._abstract ~}}
+					{{~}}	jp _zoo_error
+				{{~ else ~}}
+					{{~ method.value.body}}
+				{{~ end ~}}
 			{{~ else ~}}
-				{{~ method.value.body}}
+				{{~ class.name}}._{{method.value.name}}		.gblequ {{class.parent_class.name}}._{{method.value.name}}
 			{{~ end ~}}
-		{{~ else ~}}
-			{{~ class.name}}._{{method.value.name}}		.gblequ {{class.parent_class.name}}._{{method.value.name}}
 		{{~ end ~}}
-	{{~ end ~}}
+		{{~ for method in class.extended_methods ~}}
+			{{~ if zoo.named_members_reflection ~}}
+				{{~ class.name}}.{{method.value.name}}.pName:	.dw {{class.name}}.{{method.value.name}}.Name
+			{{~ end ~}}
+			{{~ if !method.value.is_inherited ~}}
+				{{~ class.name}}._{{method.value.name}}::
+				{{~ if method.value.abstract ~}}
+					{{~}}	jp _zoo_error
+				{{~ else ~}}
+					{{~ method.value.body}}
+				{{~ end ~}}
+			{{~ else ~}}
+				{{~ class.name}}._{{method.value.name}}		.gblequ {{class.parent_class.name}}._{{method.value.name}}
+			{{~ end ~}}
+		{{~ end ~}}
 
-	{{~}}; ----------------------------------------------------------------
-	{{~}}; - {{class.name}} Static Methods
-	{{~}}; ----------------------------------------------------------------
-	{{~ for smethod in class.smethods ~}}
-		{{~ if zoo.named_members_reflection ~}}
-			{{~ class.name}}.{{smethod.value.name}}.pName:	.dw {{class.name}}.{{smethod.value.name}}.Name
-		{{end}}
-		{{~ if !smethod.value.is_inherited ~}}
-			{{~ class.name}}._{{smethod.value.name}}::
-			{{~ if smethod.value.abstract ~}}
-				{{~}}	jp _zoo_error
+		{{~}}; ----------------------------------------------------------------
+		{{~}}; - {{class.name}} Static Methods
+		{{~}}; ----------------------------------------------------------------
+		{{~ for smethod in class.smethods ~}}
+			{{~ if zoo.named_members_reflection ~}}
+				{{~ class.name}}.{{smethod.value.name}}.pName:	.dw {{class.name}}.{{smethod.value.name}}.Name
+			{{end}}
+			{{~ if !smethod.value.is_inherited ~}}
+				{{~ class.name}}._{{smethod.value.name}}::
+				{{~ if smethod.value.abstract ~}}
+					{{~}}	jp _zoo_error
+				{{~ else ~}}
+					{{~ smethod.value.body}}
+				{{~ end ~}}
 			{{~ else ~}}
-				{{~ smethod.value.body}}
+				{{~ class.name}}._{{smethod.value.name}}		.gblequ {{class.parent_class.name}}._{{smethod.value.name}}
 			{{~ end ~}}
-		{{~ else ~}}
-			{{~ class.name}}._{{smethod.value.name}}		.gblequ {{class.parent_class.name}}._{{smethod.value.name}}
 		{{~ end ~}}
-	{{~ end ~}}
-	{{~ for smethod in class.extended_smethods ~}}
-		{{~ if zoo.named_members_reflection ~}}
-			{{~ class.name}}.{{smethod.value.name}}.pName:	.dw {{class.name}}.{{smethod.value.name}}.Name
-		{{end}}
-		{{~ if !smethod.value.is_inherited ~}}
-			{{~ class.name}}._{{smethod.value.name}}::
-			{{~ if smethod.value.abstract ~}}
-				{{~}}	jp _zoo_error
+		{{~ for smethod in class.extended_smethods ~}}
+			{{~ if zoo.named_members_reflection ~}}
+				{{~ class.name}}.{{smethod.value.name}}.pName:	.dw {{class.name}}.{{smethod.value.name}}.Name
+			{{end}}
+			{{~ if !smethod.value.is_inherited ~}}
+				{{~ class.name}}._{{smethod.value.name}}::
+				{{~ if smethod.value.abstract ~}}
+					{{~}}	jp _zoo_error
+				{{~ else ~}}
+					{{~ smethod.value.body}}
+				{{~ end ~}}
 			{{~ else ~}}
-				{{~ smethod.value.body}}
+				{{~ class.name}}._{{smethod.value.name}}		.gblequ {{class.parent_class.name}}._{{smethod.value.name}}
 			{{~ end ~}}
-		{{~ else ~}}
-			{{~ class.name}}._{{smethod.value.name}}		.gblequ {{class.parent_class.name}}._{{smethod.value.name}}
 		{{~ end ~}}
-	{{~ end ~}}
 
+	{{~ end ~}}
 {{~ end ~}}

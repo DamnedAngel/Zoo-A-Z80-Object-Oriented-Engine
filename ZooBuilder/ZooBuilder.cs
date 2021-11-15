@@ -24,7 +24,7 @@ namespace ZooBuilder
             [Option('i', "inputFile", Required = false, HelpText = "Input class files to be processed.")]
             public IEnumerable<string> InputFiles { get; set; }
 
-            [Option('o', "outputFile", Required = false, Default = "", HelpText = "Output Zoo library file.")]
+            [Option('o', "outputFile", Required = false, Default = "ZooPackage", HelpText = "Output Zoo library file.")]
             public string OutputFile { get; set; }
 
             [Option('d', "outputDir", Required = false, Default = ".", HelpText = "Output directory.")]
@@ -36,8 +36,8 @@ namespace ZooBuilder
             [Option('r', "reflectionLevel", Required = false, Default = "inheritance", HelpText = "Reflection Level (none, inheritance, namedInheritance, classStructure, namedMembers).")]
             public string ReflectionLevel { get; set; }
 
-            [Option('a', "ancestorClasses", Required = false, Default = false, HelpText = "Include ancestor classes in the package.")]
-            public bool AncestorClasses { get; set; }
+            [Option('a', "includeAncestors", Required = false, Default = false, HelpText = "Include ancestor classes in the package.")]
+            public bool IncludeAncestors { get; set; }
 
             [Option('s', "symbolFile", Required = false, HelpText = "Additional symbol files to be .included.")]
             public IEnumerable<string> SymbolFiles { get; set; }
@@ -84,7 +84,8 @@ namespace ZooBuilder
             zoo.Path = options.ZooDir;
             zoo.OutputPath = options.OutputDir;
             zoo.OutputFile = options.OutputFile;
-            ZBConsole.Debug(Resources.VerboseParams, String.Join(", ", options.InputFiles), options.ReflectionLevel, options.Verbose, options.Wait, options.OutputFile, options.OutputDir, options.ZooDir, options.AncestorClasses, String.Join(", ", options.SymbolFiles));
+            zoo.IncludeAncestors = options.IncludeAncestors;
+            ZBConsole.Debug(Resources.VerboseParams, String.Join(", ", options.InputFiles), options.ReflectionLevel, options.Verbose, options.Wait, options.OutputFile, options.OutputDir, options.ZooDir, options.IncludeAncestors, String.Join(", ", options.SymbolFiles));
 
             /*
             Console.WriteLine("only change access time:        {0}", IfTrue(TouchOptions.OnlyAccessTime));
@@ -122,30 +123,18 @@ namespace ZooBuilder
                     */
                     ICollection<ZooClass> classes = ZooClass.zooClasses.Values;
 
-                    var template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_class_s);
-                    foreach (var zooClass in classes)
-                    {
-                        var result = template.Render(new { zooClass, zoo });
-                        File.WriteAllText(Path.Combine(options.OutputDir, zooClass.Name + ".s"), result);
-                    }
+                    var template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_package_s);
+                    var result = template.Render(new { classes, zoo });
+                    File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".s"), result);
 
                     template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_package_asm);
-                    {
-                        var result = template.Render(new { classes, zoo });
-                        File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".asm"), result);
-                    }
+                    result = template.Render(new { classes, zoo });
+                    File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".asm"), result);
 
-                    if (!ZBError.IsError)
-                    {
-                        ZBConsole.Print("\nPass 3 (Assembly) started.");
-
-                        if (!ZBError.IsError)
-                        {
-                            ZBConsole.Print("\nPass 4 (Library building) started.");
-                        }
-                    }
+                    ZBConsole.Print("Zoo package generated.\n");
                 }
             }
+            ZBConsole.Print("ZooBuilder ended.\n");
         }
     }
 }

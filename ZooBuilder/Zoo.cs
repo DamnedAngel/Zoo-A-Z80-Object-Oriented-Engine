@@ -53,5 +53,6 @@ namespace ZooBuilder
 
         public string OutputPath { get; set; }
         public string OutputFile { get; set; }
+        public bool IncludeAncestors { get; set; }
     }
 }

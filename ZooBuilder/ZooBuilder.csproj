@@ -115,6 +115,9 @@
   <ItemGroup>
     <None Include="Resources\Templates\zoo.class.public.s.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Templates\zoo.package.s.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y ZooBuilder*.* /B ..\..\..\..\..\tools\ZooBuilder 

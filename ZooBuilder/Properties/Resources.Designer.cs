@@ -101,12 +101,14 @@ namespace ZooBuilder.Properties {
         ///; ----------------------------------------------------------------
         ///; - Zoo Engine
         ///; ----------------------------------------------------------------
-        ///	.include &quot;{{zoo.engine_path}}/zoo.{{zoo.reflection_level_name}}.asm&quot;
-        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforclasses.asm&quot;
-        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforobjects.asm&quot;
-        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.methodaccessorsforobjects.asm&quot;
+        ///	.include &quot;zoo.{{zoo.reflection_level_name}}.asm&quot;
+        ///	.include &quot;zoo.macros.propertyaccessorsforclasses.asm&quot;
+        ///	.include &quot;zoo.macros.propertyaccessorsforobjects.asm&quot;
+        ///	.include &quot;zoo.macros.methodaccessorsforobjects.asm&quot;
         ///
-        ///; --------------------------------------------------------- [rest of string was truncated]&quot;;.
+        ///; ----------------------------------------------------------------
+        ///; - Dependencies
+        ///; --------------------------------------------------- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_class_s {
             get {
@@ -128,6 +130,29 @@ namespace ZooBuilder.Properties {
         internal static string zoo_package_asm {
             get {
                 return ResourceManager.GetString("zoo_package_asm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///	.include &quot;{{zoo.output_path}}/{{zoo.output_file}}.asm&quot;
+        ///
+        ///; ----------------------------------------------------------------
+        ///; - Dependencies
+        ///; ----------------------------------------------------------------
+        ///{{~ for class in classes ~}}
+        ///	{{~ for zinclude in class.zincludes ~}}
+        ///		{{~}}	.include &quot;{{zinclude.value.uri}}&quot;	; referenced in Class {{class.name}}
+        ///	{{~ end ~}}
+        ///{{~ end ~}}
+        ///
+        ///; ----------------------------------------------------------------
+        ///; - EQUs
+        ///; ------------------------------------ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string zoo_package_s {
+            get {
+                return ResourceManager.GetString("zoo_package_s", resourceCulture);
             }
         }
         

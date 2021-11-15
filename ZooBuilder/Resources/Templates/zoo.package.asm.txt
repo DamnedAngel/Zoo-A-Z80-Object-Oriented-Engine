@@ -1,10 +1,10 @@
 ﻿; ----------------------------------------------------------------
 ; - Zoo Engine
 ; ----------------------------------------------------------------
-	.include "{{zoo.engine_path}}/zoo.{{zoo.reflection_level_name}}.asm"
-	.include "{{zoo.engine_path}}/zoo.macros.propertyaccessorsforclasses.asm"
-	.include "{{zoo.engine_path}}/zoo.macros.propertyaccessorsforobjects.asm"
-	.include "{{zoo.engine_path}}/zoo.macros.methodaccessorsforobjects.asm"
+	.include "zoo.{{zoo.reflection_level_name}}.asm"
+	.include "zoo.macros.propertyaccessorsforclasses.asm"
+	.include "zoo.macros.propertyaccessorsforobjects.asm"
+	.include "zoo.macros.methodaccessorsforobjects.asm"
 	
 ; ----------------------------------------------------------------
 ; - EQUs
