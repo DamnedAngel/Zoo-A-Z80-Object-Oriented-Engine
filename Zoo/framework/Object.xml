@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <class name="Object">
-  <property name="abc" type="@word" static="true"/>
-  <property name="def" type="@word" scope="public"/>
+  <property name="abc" type="@word" static="true" scope="public"/>
+  <property name="def" type="@word" scope="protected"/>
   <method name="Constructor" scope="public">
     ret
   </method>    

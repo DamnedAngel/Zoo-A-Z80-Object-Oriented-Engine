@@ -1,4 +1,4 @@
-	.include "zoo.asm"
+	.include "zoo.engine.asm"
 
 Class.NoInheritanceReflection.offset		.equ 0
 

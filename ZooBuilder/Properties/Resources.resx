@@ -132,13 +132,13 @@ Exiting with code {0}/0x{0:X8} ({1}).</value>
   <data name="zoo_class_public_s" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Templates\zoo.class.public.s.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="zoo_class_s" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Templates\zoo.class.s.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="zoo_package_asm" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Templates\zoo.package.asm.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="zoo_package_s" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Templates\zoo.package.s.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="zoo_class_protected_s" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Templates\zoo.class.protected.s.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

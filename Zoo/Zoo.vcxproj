@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="engine\zoo.asm" />
+    <None Include="engine\zoo.engine.asm" />
     <None Include="engine\zoo.macros.methodaccessorsforobjects.asm" />
     <None Include="engine\zoo.macros.methods.asm" />
     <None Include="engine\zoo.macros.pointers.asm" />

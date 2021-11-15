@@ -3,43 +3,43 @@
 
 ;{{zoo_class.name}}'s constants
 {{~ for equ in zoo_class.equs ~}}
-	{{~ if equ.value.is_public ~}}
+	{{~ if ! equ.value.is_private ~}}
 		{{~ equ.value.name}}
 	{{~ end ~}}
 {{~ end ~}}
 
 ;{{zoo_class.name}}'s static properties
 {{~ for property in zoo_class.extended_sproperties reversed ~}}
-	{{~ if property.value.is_public ~}}
+	{{~ if ! property.value.is_private ~}}
 		{{~ zoo_class.name}}.{{property.value.name}}
 	{{~ end ~}}
 {{~ end ~}}
 {{~ for property in zoo_class.sproperties ~}}
-	{{~ if property.value.is_public ~}}
+	{{~ if ! property.value.is_private ~}}
 		{{~ zoo_class.name}}.{{property.value.name}}
 	{{~ end ~}}
 {{~ end ~}}
 
 ;{{zoo_class.name}}'s methods
-{{~ for method in zoo_class.extended_method reversed ~}}
-	{{~ if method.value.is_public ~}}
+{{~ for method in zoo_class.extended_methods reversed ~}}
+	{{~ if ! method.value.is_private ~}}
 		{{~ zoo_class.name}}._{{method.value.name}}
 	{{~ end ~}}
 {{~ end ~}}
-{{~ for method in zoo_class.method ~}}
-	{{~ if method.value.is_public ~}}
+{{~ for method in zoo_class.methods ~}}
+	{{~ if ! method.value.is_private ~}}
 		{{~ zoo_class.name}}._{{method.value.name}}
 	{{~ end ~}}
 {{~ end ~}}
 
 ;{{zoo_class.name}}'s static methods
-{{~ for method in zoo_class.extended_smethod reversed ~}}
-	{{~ if method.value.is_public ~}}
+{{~ for method in zoo_class.extended_smethods reversed ~}}
+	{{~ if ! method.value.is_private ~}}
 		{{~ zoo_class.name}}._{{method.value.name}}
 	{{~ end ~}}
 {{~ end ~}}
-{{~ for method in zoo_class.smethod ~}}
-	{{~ if method.value.is_public ~}}
+{{~ for method in zoo_class.smethods ~}}
+	{{~ if ! method.value.is_private ~}}
 		{{~ zoo_class.name}}._{{method.value.name}}
 	{{~ end ~}}
 {{~ end ~}}

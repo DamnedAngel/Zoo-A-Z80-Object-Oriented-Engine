@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,18 +125,34 @@ namespace ZooBuilder
                     */
                     ICollection<ZooClass> classes = ZooClass.zooClasses.Values;
 
+                    ZBConsole.Print("Generating package...");
                     var template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_package_s);
                     var result = template.Render(new { classes, zoo });
                     File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".s"), result);
+                    ZBConsole.Print("  DONE!");
 
-                    template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_package_asm);
-                    result = template.Render(new { classes, zoo });
-                    File.WriteAllText(Path.Combine(options.OutputDir, options.OutputFile + ".asm"), result);
+                    foreach (var zooClass in classes)
+                    {
+                        if (zooClass.IsInputFile || zoo.IncludeAncestors)
+                        {
+                            ZBConsole.Print("Generating public symbol listing...");
+                            template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_class_public_s);
+                            result = template.Render(new { zooClass, zoo });
+                            File.WriteAllText(Path.Combine(options.OutputDir, zooClass.Name + ".public.txt"), result);
+                            ZBConsole.Print("  DONE!");
+
+                            ZBConsole.Print("Generating protected symbol listing...");
+                            template = Template.Parse(global::ZooBuilder.Properties.Resources.zoo_class_protected_s);
+                            result = template.Render(new { zooClass, zoo });
+                            File.WriteAllText(Path.Combine(options.OutputDir, zooClass.Name + ".protected.txt"), result);
+                            ZBConsole.Print("  DONE!");
+                        }
+                    }
 
                     ZBConsole.Print("Zoo package generated.\n");
                 }
             }
-            ZBConsole.Print("ZooBuilder ended.\n");
+            ZBConsole.Print("ZooBuilder ended.");
         }
     }
 }

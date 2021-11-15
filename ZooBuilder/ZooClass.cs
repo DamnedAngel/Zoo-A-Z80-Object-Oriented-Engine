@@ -26,6 +26,10 @@ namespace ZooBuilder
         public string FileName { get { return ClassFile.FullFileName; } }
         public string URI { get { return ClassFile.URI; } }
         public bool IsInputFile { get; set; } = false;
+        public bool IsDirectParentOfInputFile { get; set; } = false;
+        public bool IsDirectDependencyOfInputFile { get; set; } = false;
+        public bool IsExternalParentOfInputFile { get { return IsDirectParentOfInputFile && !IsInputFile; } }
+        public bool IsExternalDependencyOfInputFile { get { return IsDirectDependencyOfInputFile && !IsInputFile; } }
 
         public ZooClass ParentClass { get; set; }
         public IDictionary<string, ZBFile> Dependencies { get; set; }
@@ -314,6 +318,7 @@ namespace ZooBuilder
                 {
                     ZBConsole.Debug("{0}[{1}]Undefined parent. Zoo's Object class assumed.", logPrefix, Name);
                     ParentClass = getZooClass("Object", zoo.FrameworkPath, null, zoo, logPrefix);
+                    ParentClass.IsDirectParentOfInputFile = true;
                 }
             }
             else
@@ -521,6 +526,7 @@ namespace ZooBuilder
                             {
                                 var dependency = Dependencies[type];
                                 var propClass = getZooClass(dependency.FileName, dependency.AbsolutePath, null, zoo, logPrefix);
+                                propClass.IsDirectDependencyOfInputFile = true;
                                 size = propClass.ObjectSize;
                             }
                         }

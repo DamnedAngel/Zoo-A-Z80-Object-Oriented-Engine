@@ -73,6 +73,9 @@
     <None Include="engine\zoo.s">
       <Filter>engine</Filter>
     </None>
+    <None Include="engine\zoo.engine.asm">
+      <Filter>engine</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="framework\Object.xml">

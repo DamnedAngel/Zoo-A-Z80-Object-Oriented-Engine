@@ -1,16 +1,275 @@
-﻿
-	.include "{{zoo.output_file}}.asm"
+﻿; ****************************************************************
+; ****************************************************************
+; *** INCLUDES			                                       ***
+; ****************************************************************
+; ****************************************************************
 
 ; ----------------------------------------------------------------
-; - Dependencies
+; - Zoo Engine
 ; ----------------------------------------------------------------
-{{~ for class in classes ~}}
-	{{~ if class.is_input_file || zoo.include_ancestors ~}}
-		{{~ for zinclude in class.zincludes ~}}
-			{{~}}	.include "{{zinclude.value.uri}}"	; referenced in Class {{class.name}}
+	.include "zoo.{{zoo.reflection_level_name}}.asm"
+	.include "zoo.macros.propertyaccessorsforclasses.asm"
+	.include "zoo.macros.propertyaccessorsforobjects.asm"
+	.include "zoo.macros.methodaccessorsforobjects.asm"
+
+{{~ if ! zoo.include_ancestors ~}}
+; ----------------------------------------------------------------
+; - Ancestor references
+; ----------------------------------------------------------------
+	{{~ for class in classes ~}}
+		{{~ if class.is_external_parent_of_input_file ~}}
+	.include "{{class.name}}.protected.s"
+		{{~ end ~}}
+	{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Dependency references
+; ----------------------------------------------------------------
+	{{~ for class in classes ~}}
+		{{~ if class.is_external_dependecy_of_input_file && ! class.is_external_parent_of_input_file ~}}
+	.include "{{class.name}}.public.s"
 		{{~ end ~}}
 	{{~ end ~}}
 {{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Custom includes
+; ----------------------------------------------------------------
+{{~ for class in classes ~}}
+	{{~ for zinclude in class.zincludes ~}}
+		{{~}}	.include "{{zinclude.value.uri}}"	; referenced in Class {{class.name}}
+	{{~ end ~}}
+{{~ end ~}}
+
+
+; ****************************************************************
+; ****************************************************************
+; *** PACKAGE MACROS                                           ***
+; ****************************************************************
+; ****************************************************************
+
+; ----------------------------------------------------------------
+; - Methods Calls
+; ----------------------------------------------------------------
+{{~ for class in classes ~}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for method in class.methods ~}}
+	.macro	{{class.name}}.{{method.value.name}}_IY
+	Zoo.CallMethod_IY {{class.name}}, {{method.value.name}}
+	.endm
+		{{~ end ~}}
+		{{~ for method in class.extended_methods }}
+	.macro	{{class.name}}.{{method.value.name}}_IY
+	Zoo.CallMethod_IY {{class.name}}, {{method.value.name}}
+	.endm
+		{{~ end ~}}
+
+	{{~ end ~}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Static Methods Calls
+; ----------------------------------------------------------------
+{{~ for class in classes ~}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for method in class.smethods ~}}
+			{{~ if method.value.is_public ~}}
+	.macro	{{class.name}}.{{method.value.name}}
+	call {{class.name}}._{{method.value.name}}
+	.endm
+			{{~ end ~}}
+		{{~ end ~}}
+		{{~ for method in class.extended_smethods ~}}
+			{{~ if method.value.is_public ~}}
+	.macro	{{class.name}}.{{method.value.name}}
+	call {{class.name}}._{{method.value.name}}
+	.endm
+			{{~ end ~}}
+		{{~ end ~}}
+
+	{{~ end ~}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Class Property Accessors
+; ----------------------------------------------------------------
+
+{{~ for class in classes ~}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for property in class.object_reflection_data ~}}
+			{{~ if property.value.is_public ~}}
+			{{~ end ~}}
+		{{~ end ~}}
+		{{~ for property in class.properties ~}}
+			{{~ if property.value.is_public ~}}
+; ----------------------------------------------------------------
+; - {{class.name}}.{{property.value.name}}
+; ----------------------------------------------------------------
+				{{~ if property.value.is_byte ~}}
+	Property8BitsAccessorsForClasses {{class.name}}, {{property.value.name}}
+				{{~ else ~}}
+	Property16BitsAccessorsForClasses {{class.name}}, {{property.value.name}}
+				{{~ end ~}}
+	PropertyPointersAccessorsForClasses {{class.name}}, {{property.value.name}}
+			{{~ end ~}}
+		{{~ end ~}}
+		{{~ for property in class.extended_properties ~}}
+			{{~ if property.value.is_public ~}}
+; ----------------------------------------------------------------
+; - {{class.name}}.{{property.value.name}}
+; ----------------------------------------------------------------
+				{{~ if property.value.is_byte ~}}
+	Property8BitsAccessorsForClasses {{class.name}}, {{property.value.name}}
+				{{~ else ~}}
+	Property16BitsAccessorsForClasses {{class.name}}, {{property.value.name}}
+				{{~ end ~}}
+	PropertyPointersAccessorsForClasses {{class.name}}, {{property.value.name}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - {{class.name}} Object direct accessor
+; ----------------------------------------------------------------
+
+; ----------------------------------------------------------------
+; - Accessors
+; ----------------------------------------------------------------
+
+	.macro {{class.name}}._ObjectAccessors object
+		{{~ for property in class.properties ~}}
+			{{~ if property.value.is_public ~}}
+				{{~ if property.value.is_byte ~}}
+	Property8BitsAccessorsForObjects {{class.name}}, object, {{property.value.name}}
+				{{~ else ~}}
+	Property16BitsAccessorsForObjects {{class.name}}, object, {{property.value.name}}
+				{{~ end ~}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+		{{~ for property in class.extended_properties ~}}
+			{{~ if property.value.is_public ~}}
+				{{~ if property.value.is_byte ~}}
+	Property8BitsAccessorsForObjects {{class.name}}, object, {{property.value.name}}
+				{{~ else ~}}
+	Property16BitsAccessorsForObjects {{class.name}}, object, {{property.value.name}}
+				{{~ end ~}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+	.macro object'._SetIY
+	Zoo.SetObj object
+	.endm
+
+		{{~ for method in class.methods ~}}
+			{{~ if method.value.is_public ~}}
+	MethodAccessorsForObjects {{class.name}}, object, {{method.value.name}} 
+			{{~ end ~}}
+		{{~ end ~}}
+		{{~ for method in class.extended_methods ~}}
+			{{~ if method.value.is_public ~}}
+	MethodAccessorsForObjects {{class.name}}, object, {{method.value.name}} 
+			{{~ end ~}}
+		{{~ end ~}}
+
+	.endm
+
+; ----------------------------------------------------------------
+; - Create
+; ----------------------------------------------------------------
+
+	.macro {{class.name}}._Create object
+	{{class.name}}._ObjectAccessors object
+
+	.area _DATA
+
+		{{~ if zoo.named_inheritance ~}}
+	object'.Name::		strz "object"
+		{{~ end ~}}
+	object'._Start::
+		{{~ for property in class.extended_properties ~}}
+	object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+		{{~ end ~}}
+
+	object'::
+		{{~ for property in class.object_reflection_data ~}}
+			{{~ if property.value.is_public ~}}
+	object'.{{property.value.name}}::	{{property.value.value}}	; Size = {{property.value.total_size}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+		{{~ for property in class.properties ~}}
+	object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+		{{~ end ~}}
+
+	.area _CODE
+
+	.endm
+
+; ----------------------------------------------------------------
+; - Construct
+; ----------------------------------------------------------------
+
+		{{~ if class.has_public_properties ~}}
+	.macro {{class.name}}._Construct object, {{class.public_property_list}}
+		{{~ else ~}}
+	.macro {{class.name}}._Construct object
+		{{~ end ~}}
+
+	{{class.name}}._ObjectAccessors object
+
+	.area _DATA
+
+		{{~ if zoo.named_inheritance ~}}
+	object'.Name::		strz "object"
+		{{~ end ~}}
+
+	object'._Start::
+		{{~ for property in class.extended_properties ~}}
+			{{~ if property.value.is_public ~}}
+				{{~ if property.value.is_byte ~}}
+	object'.{{property.value.name}}::	.db {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+				{{~ else ~}}
+	object'.{{property.value.name}}::	.dw {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+				{{~ end ~}}
+			{{~ else ~}}
+	object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+	object'::
+		{{~ for property in class.object_reflection_data ~}}
+			{{~ if property.value.is_public ~}}
+	object'.{{property.value.name}}::	{{property.value.value}}	; Size = {{property.value.total_size}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+		{{~ for property in class.properties ~}}
+			{{~ if property.value.is_public ~}}
+				{{~ if property.value.is_byte ~}}
+	object'.{{property.value.name}}::	.db {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+				{{~ else ~}}
+	object'.{{property.value.name}}::	.dw {{property.value.name}}	; {{property.value.count}} instances of size {{property.value.size}}
+				{{~ end ~}}
+			{{~ else ~}}
+	object'.{{property.value.name}}::	.blkb #{{property.value.total_size}}	; {{property.value.count}} instances of size {{property.value.size}}
+			{{~ end ~}}
+		{{~ end ~}}
+
+	.area _CODE
+
+	object'.Constructor
+	
+	.endm
+
+	{{~ end ~}}
+{{~ end ~}}
+
+
+; ****************************************************************
+; ****************************************************************
+; *** PACKAGE CLASSES DEFINITION                               ***
+; ****************************************************************
+; ****************************************************************
 
 ; ----------------------------------------------------------------
 ; - EQUs
@@ -20,9 +279,22 @@
 		{{~ for equ in class.equs ~}}
 			{{~ class.name}}.{{equ.value.name}}		.equ {{equ.value.value}}
 		{{~ end ~}}
+
 	{{~ end ~}}
 {{~ end ~}}
 
+; ----------------------------------------------------------------
+; - Object Size
+; ----------------------------------------------------------------
+{{~ for class in classes ~}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ class.name}}._Size	.equ {{class.object_size}}
+	{{~ end ~}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Offsets
+; ----------------------------------------------------------------
 ; ----------------------------------------------------------------
 ; - Properties Offsets/Object Reflection Data
 ; ----------------------------------------------------------------
@@ -37,6 +309,25 @@
 		{{~ for property in class.properties ~}}
 			{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}	; Size = {{property.value.total_size}} ({{property.value.count}} instances of size {{property.value.size}})
 		{{~ end }}
+
+	{{~ end ~}}
+{{~ end ~}}
+
+; ----------------------------------------------------------------
+; - Methods References/Class Reflection Data
+; ----------------------------------------------------------------
+{{~ for class in classes ~}}
+	{{~ if class.is_input_file || zoo.include_ancestors ~}}
+		{{~ for property in class.class_reflection_data ~}}
+			{{~ class.name}}.{{property.value.name}}.offset	.equ {{property.value.offset}}
+		{{~ end ~}}
+		{{~ for method in class.methods ~}}
+			{{~ class.name}}._{{method.value.name}}.offset	.equ {{method.value.offset}}
+		{{~ end ~}}
+		{{~ for method in class.extended_methods ~}}
+			{{~ class.name}}._{{method.value.name}}.offset	.equ {{method.value.offset}}
+		{{~ end ~}}
+
 	{{~ end ~}}
 {{~ end ~}}
 
@@ -234,12 +525,6 @@
 {{~ end ~}}
 
 .area _CODE
-
-_zoo_call_hl::
-	jp (hl)
-
-_zoo_error::
-	halt
 
 {{~ for class in classes ~}}
 	{{~ if class.is_input_file || zoo.include_ancestors ~}}

@@ -77,18 +77,52 @@ namespace ZooBuilder.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {{for equ in zoo_class.equs}}{{if equ.is_public}}{{equ.value.name}}			.equ {{equ.value.value}}
-        ///{{end}}{{end}}
+        ///   Looks up a localized string similar to ;{{zoo_class.name}}
+        ///	{{~ zoo_class.name}}
         ///
-        ///;{{zoo_class.name}}.Properties
-        ///{{for property in zoo_class.properties}}{{if property.is_public}}.globl {{zoo_class.name}}.{{property.value.name}}.offset:	.equ {{property.value.offset}}	; Size = {{property.value.size}}
-        ///{{end}}
+        ///;{{zoo_class.name}}&apos;s constants
+        ///{{~ for equ in zoo_class.equs ~}}
+        ///	{{~ if ! equ.value.is_private ~}}
+        ///		{{~ equ.value.name}}
+        ///	{{~ end ~}}
+        ///{{~ end ~}}
         ///
-        ///.globl {{zoo_class.name}}
-        ///.globl {{zoo_class.name}}.ClassNameStr
-        ///.globl {{zoo_class.name}}.ParentClass
-        ///.globl {{zoo_class.name}}.SisterClass
-        ///.globl {{zoo_class.nam [rest of string was truncated]&quot;;.
+        ///;{{zoo_class.name}}&apos;s properties
+        ///{{~ for property in zoo_class.extended_properties reversed ~}}
+        ///	{{~ if ! equ.value.is_private ~}}
+        ///		{{~ zoo_class.name}}.{{property.value.name}}
+        ///	{{~ end ~}}
+        ///{{~ end ~}}
+        ///{{~ for property in zoo_class.properties ~}}
+        ///	{{~ if ! equ.value.is_private ~}}
+        ///		{{~ zoo_class.na [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string zoo_class_protected_s {
+            get {
+                return ResourceManager.GetString("zoo_class_protected_s", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ;{{zoo_class.name}}
+        ///	{{~ zoo_class.name}}
+        ///
+        ///;{{zoo_class.name}}&apos;s constants
+        ///{{~ for equ in zoo_class.equs ~}}
+        ///	{{~ if equ.value.is_public ~}}
+        ///		{{~ equ.value.name}}
+        ///	{{~ end ~}}
+        ///{{~ end ~}}
+        ///
+        ///;{{zoo_class.name}}&apos;s properties
+        ///{{~ for property in zoo_class.extended_properties reversed ~}}
+        ///	{{~ if property.value.is_public ~}}
+        ///		{{~ zoo_class.name}}.{{property.value.name}}
+        ///	{{~ end ~}}
+        ///{{~ end ~}}
+        ///{{~ for property in zoo_class.properties ~}}
+        ///	{{~ if property.value.is_public ~}}
+        ///		{{~ zoo_class.n [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_class_public_s {
             get {
@@ -97,35 +131,17 @@ namespace ZooBuilder.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///; ----------------------------------------------------------------
+        ///   Looks up a localized string similar to ; ----------------------------------------------------------------
         ///; - Zoo Engine
         ///; ----------------------------------------------------------------
         ///	.include &quot;zoo.{{zoo.reflection_level_name}}.asm&quot;
         ///	.include &quot;zoo.macros.propertyaccessorsforclasses.asm&quot;
         ///	.include &quot;zoo.macros.propertyaccessorsforobjects.asm&quot;
         ///	.include &quot;zoo.macros.methodaccessorsforobjects.asm&quot;
-        ///
-        ///; ----------------------------------------------------------------
-        ///; - Dependencies
-        ///; --------------------------------------------------- [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string zoo_class_s {
-            get {
-                return ResourceManager.GetString("zoo_class_s", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ; ----------------------------------------------------------------
-        ///; - Zoo Engine
-        ///; ----------------------------------------------------------------
-        ///	.include &quot;{{zoo.engine_path}}/zoo.{{zoo.reflection_level_name}}.asm&quot;
-        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforclasses.asm&quot;
-        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.propertyaccessorsforobjects.asm&quot;
-        ///	.include &quot;{{zoo.engine_path}}/zoo.macros.methodaccessorsforobjects.asm&quot;
         ///	
-        ///; ---------------------------------------------------------- [rest of string was truncated]&quot;;.
+        ///; ----------------------------------------------------------------
+        ///; - EQUs
+        ///; ------------------------------------------------------------ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_package_asm {
             get {
@@ -134,21 +150,15 @@ namespace ZooBuilder.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///	.include &quot;{{zoo.output_path}}/{{zoo.output_file}}.asm&quot;
-        ///
-        ///; ----------------------------------------------------------------
-        ///; - Dependencies
-        ///; ----------------------------------------------------------------
-        ///{{~ for class in classes ~}}
-        ///	{{~ for zinclude in class.zincludes ~}}
-        ///		{{~}}	.include &quot;{{zinclude.value.uri}}&quot;	; referenced in Class {{class.name}}
-        ///	{{~ end ~}}
-        ///{{~ end ~}}
-        ///
-        ///; ----------------------------------------------------------------
-        ///; - EQUs
-        ///; ------------------------------------ [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to ; ****************************************************************
+        ///; ****************************************************************
+        ///; *** INCLUDE ZOO ENGINE                                       ***
+        ///; ****************************************************************
+        ///; ****************************************************************
+        ///	.include &quot;zoo.{{zoo.reflection_level_name}}.asm&quot;
+        ///	.include &quot;zoo.macros.propertyaccessorsforclasses.asm&quot;
+        ///	.include &quot;zoo.macros.propertyaccessorsforobjects.asm&quot;
+        ///	.include [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string zoo_package_s {
             get {
